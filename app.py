@@ -85,7 +85,7 @@ def weather(req):
 		else:
 			resp = error
 
-		return resp
+		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify city.'
 
@@ -163,7 +163,7 @@ def weather_activity(req):
 		else:
 			resp = error
 
-		return resp
+		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify location.'
 
@@ -232,7 +232,7 @@ def weather_condition(req):
 		else:
 			resp = error
 
-		return resp
+		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify location.'
 
@@ -359,7 +359,7 @@ def weather_outfit(req):
 		else:
 			resp = error
 
-		return resp
+		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify city.'
 
@@ -450,7 +450,7 @@ def weather_temperature(req):
 		else:
 			resp = error
 
-		return resp
+		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify city.'
 
