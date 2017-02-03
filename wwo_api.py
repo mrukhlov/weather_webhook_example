@@ -26,7 +26,7 @@ def wwo_weather_get(parameters, number_of_days=1):
 			params_day = datetime.strptime(date, '%Y-%m-%d')
 			diff = (params_day - today).days
 			if diff > 13:
-				return {'error':'That\'s too far. I can only watch two weeks ahead.'}
+				return {'error':'I couldn\'t find forecast for that far in the future.'}
 		date_period = date_time.get('date-period')
 		if date_period:
 			dates = date_period.split('/')
@@ -36,7 +36,7 @@ def wwo_weather_get(parameters, number_of_days=1):
 			params_day = datetime.strptime(dates[1], '%Y-%m-%d')
 			diff_end = (params_day - today).days
 			if diff_end > 13:
-				return {'error':'That\'s too far. I can only watch two weeks ahead.'}
+				return {'error':'I couldn\'t find forecast for that far in the future.'}
 			else:
 				wwo_data['num_of_days'] = diff_end+1
 		time_period = date_time.get('time-period')

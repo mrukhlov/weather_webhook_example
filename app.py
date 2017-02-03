@@ -1,6 +1,6 @@
 import os
 from wwo_api import wwo_weather_get
-
+from weather_response import *
 from weather_data_process import (
 	weather_current,
 	weather_date,
@@ -21,6 +21,8 @@ app = Flask(__name__)
 log = app.logger
 
 apikey = '7UmuyhWz6qteGNoQRusNzXA9M0Ccwlf8'
+
+unit_global = ''
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -51,6 +53,10 @@ def weather(req):
 	address = parameters.get('address')
 	date_time = parameters.get('date-time')
 	city = address.get('city')
+	unit = parameters.get('unit')
+	if not unit:
+		if len(unit_global) > 0:
+			parameters['unit'] = unit_global
 
 	if city:
 
@@ -71,7 +77,7 @@ def weather(req):
 					resp = 'Weather in %s on %s %s will be %s degrees %s.' % (city, date, time, temp, unit)
 				if date and not time:
 					city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
-					resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s.' % (city, date, temp, unit, min_temp, max_temp)
+					resp = weather_response_date(city, date, temp, unit, min_temp, max_temp)
 				elif date_period:
 					city, date_start, date_end, degree_list = weather_date_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s' % (city, date_start, date_end, str(degree_list))
@@ -80,8 +86,8 @@ def weather(req):
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc = weather_current(parameters, wwo)
-				resp = 'Weather in %s is %s degrees celsius. %s.' % (city, temp, desc)
+				city, temp, desc, unit = weather_current(parameters, wwo)
+				resp = weather_response_current(city, temp, desc, unit)
 		else:
 			resp = error
 
@@ -100,6 +106,10 @@ def weather_activity(req):
 	city = address.get('city')
 	date_time = parameters.get('date-time')
 	activity = parameters.get('activity')
+	unit = parameters.get('unit')
+	if not unit:
+		if len(unit_global) > 0:
+			parameters['unit'] = unit_global
 
 	if city:
 
@@ -147,17 +157,17 @@ def weather_activity(req):
 					resp = 'The weather in %s on period from %s till %s will be: %s. What a weather for %s.' % (city, date_start, date_end, str(degree_list), activity)
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc = weather_current(parameters, wwo)
+				city, temp, desc, unit = weather_current(parameters, wwo)
 				if activity in winter_activity:
 					if temp < 0:
-						resp = 'Weather in %s is %s degrees celsius. %s. What a perfect weather for %s!' % (city, temp, desc, activity)
+						resp = 'Weather in %s is %s degrees %s. %s. What a perfect weather for %s!' % (city, temp, unit, desc, activity)
 					else:
-						resp = 'Weather in %s is %s degrees celsius. %s. Not a best weather for %s.' % (city, temp, desc, activity)
+						resp = 'Weather in %s is %s degrees %s. %s. Not a best weather for %s.' % (city, temp, unit, desc, activity)
 				elif activity in summer_activity:
 					if temp > 0:
-						resp = 'Weather in %s is %s degrees celsius. %s. What a perfect weather for %s!' % (city, temp, desc, activity)
+						resp = 'Weather in %s is %s degrees %s. %s. What a perfect weather for %s!' % (city, temp, unit, desc, activity)
 					else:
-						resp = 'Weather in %s is %s degrees celsius. %s. Not a best weather for %s.' % (city, temp, desc, activity)
+						resp = 'Weather in %s is %s degrees %s. %s. Not a best weather for %s.' % (city, temp, unit, desc, activity)
 				else:
 					resp = 'What sport is this?'
 		else:
@@ -176,6 +186,10 @@ def weather_condition(req):
 	date_time = parameters.get('date-time')
 	city = address.get('city')
 	condition = parameters.get('condition')
+	unit = parameters.get('unit')
+	if not unit:
+		if len(unit_global) > 0:
+			parameters['unit'] = unit_global
 
 	if condition in unsupported:
 		error = 'Unsupported condition'
@@ -227,8 +241,8 @@ def weather_condition(req):
 					resp = 'The weather in %s on period from %s till %s will be: %s. Chance of %s is %s percent.' % (city, date_start, date_end, str(degree_list), condition_original, str(condition_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, condition = weather_current(parameters, wwo)
-				resp = 'Weather in %s is %s degrees celsius. %s. Chance of %s is %s percent.' % (city, temp, desc, condition_original, condition)
+				city, temp, desc, condition, unit = weather_current(parameters, wwo)
+				resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent.' % (city, temp, unit, desc, condition_original, condition)
 		else:
 			resp = error
 
@@ -252,6 +266,12 @@ def weather_outfit(req):
 	date_time = parameters.get('date-time')
 	city = address.get('city')
 	outfit = parameters.get('outfit')
+
+	unit = parameters.get('unit')
+	if not unit:
+		if len(unit_global) > 0:
+			parameters['unit'] = unit_global
+
 	if outfit:
 		if outfit in cold_weather or outfit in warm_weather or outfit in hot_weather:
 			if outfit in cold_weather:
@@ -339,23 +359,23 @@ def weather_outfit(req):
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, condition = weather_current(parameters, wwo)
+				city, temp, desc, condition, unit = weather_current(parameters, wwo)
 				if outfit in rain or outfit in snow or outfit in sun:
 					if condition > 50:
-						resp = 'Weather in %s is %s degrees celsius. %s. Chance of %s is %s percent. You probably need %s.' % (city, temp, desc, condition_original, condition, outfit)
+						resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent. You probably need %s.' % (city, temp, unit, desc, condition_original, condition, outfit)
 					else:
-						resp = 'Weather in %s is %s degrees celsius. %s. Chance of %s is %s percent. You probably don\'t need %s.' % (city, temp, desc, condition_original, condition, outfit)
+						resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent. You probably don\'t need %s.' % (city, temp, unit, desc, condition_original, condition, outfit)
 				else:
 					if temp_limit > 0:
 						if temp > temp_limit:
-							resp = 'Weather in %s is %s degrees celsius. %s. Probably it\'s too hot for %s.' % (city, temp, desc, outfit)
+							resp = 'Weather in %s is %s degrees %s. %s. Probably it\'s too hot for %s.' % (city, temp, unit, desc, outfit)
 						else:
-							resp = 'Weather in %s is %s degrees celsius. %s. Weather is perfect for %s!' % (city, temp, desc, outfit)
+							resp = 'Weather in %s is %s degrees %s. %s. Weather is perfect for %s!' % (city, temp, unit, desc, outfit)
 					else:
 						if temp > temp_limit:
-							resp = 'Weather in %s is %s degrees celsius. %s. You probably don\'t need %s.' % (city, temp, desc, outfit)
+							resp = 'Weather in %s is %s degrees %s. %s. You probably don\'t need %s.' % (city, temp, unit, desc, outfit)
 						else:
-							resp = 'Weather in %s is %s degrees celsius. %s. Weather is cold, please wear %s!' % (city, temp, desc, outfit)
+							resp = 'Weather in %s is %s degrees %s. %s. Weather is cold, please wear %s!' % (city, temp, unit, desc, outfit)
 		else:
 			resp = error
 
@@ -368,8 +388,14 @@ def weather_temperature(req):
 	parameters = adress_getter(req['result']['parameters'])
 	address = parameters.get('address')
 	date_time = parameters.get('date-time')
+	unit = parameters.get('unit')
 	city = address.get('city')
 	temperature = parameters['temperature']
+
+	unit = parameters.get('unit')
+	if not unit:
+		if len(unit_global) > 0:
+			parameters['unit'] = unit_global
 
 	if temperature:
 		if temperature == 'hot':
@@ -431,25 +457,29 @@ def weather_temperature(req):
 				elif time_period:
 					city, date_start, date_end, degree_list = weather_time_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
+			elif unit:
+				global unit_global
+				unit_global = unit
+				resp = 'Okay, i will show weather in %s.' % (unit_global)
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc = weather_current(parameters, wwo)
+				city, temp, desc, unit = weather_current(parameters, wwo)
 				if not temperature:
-					resp = 'Weather in %s is %s degrees celsius. %s.' % (city, temp, desc)
+					resp = 'Weather in %s is %s degrees %s. %s.' % (city, temp, unit, desc)
 				else:
 					if temp_limit > 0:
 						if temp < temp_limit:
-							resp = 'Weather in %s is %s degrees celsius. %s. It\'s not too %s outside.' % (city, temp, desc, temperature)
+							resp = 'Weather in %s is %s degrees %s. %s. It\'s not too %s outside.' % (city, temp, unit, desc, temperature)
 						else:
-							resp = 'Weather in %s is %s degrees celsius. %s. It\'s definitely %s outside.' % (city, temp, desc, temperature)
+							resp = 'Weather in %s is %s degrees %s. %s. It\'s definitely %s outside.' % (city, temp, unit, desc, temperature)
 					else:
 						if temp > temp_limit:
-							resp = 'Weather in %s is %s degrees celsius. %s. It\'s not too %s outside.' % (city, temp, desc, temperature)
+							resp = 'Weather in %s is %s degrees %s. %s. It\'s not too %s outside.' % (city, temp, unit, desc, temperature)
 						else:
-							resp = 'Weather in %s is %s degrees celsius. %s. It\'s definitely %s outside.' % (city, temp, desc, temperature)
+							resp = 'Weather in %s is %s degrees %s. %s. It\'s definitely %s outside.' % (city, temp, unit, desc, temperature)
 		else:
 			resp = error
-
+		print unit_global
 		return {"speech": resp, "displayText": resp}
 	else:
 		return 'Please specify city.'

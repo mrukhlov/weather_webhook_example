@@ -10,7 +10,7 @@ def adress_getter(parameters):
 	if address:
 		city = address.get('city')
 		country = address.get('country')
-		if country == 'Russian Federation': country = 'Russia'
+		if country and country == 'Russian Federation': country = 'Russia'
 		if not city:
 			send_url = 'http://ipinfo.io'
 			r = requests.get(send_url)
@@ -28,6 +28,7 @@ def adress_getter(parameters):
 			parameters['address']['city'] = city
 		if country:
 			parameters['address']['country'] = country
+			parameters['address']['country_code'] = r.json().get('country')
 
 	return parameters
 
@@ -189,14 +190,17 @@ def weather_current(parameters, wwo):
 
 	if unit and unit == 'C':
 		temp = wwo['current_condition'][0]['temp_C']
+		unit = 'celsius'
 	elif unit and unit == 'F':
 		temp = wwo['current_condition'][0]['temp_F']
+		unit = 'fahrenheit'
 	else:
 		temp = wwo['current_condition'][0]['temp_C']
+		unit = 'celsius'
 	desc = wwo['current_condition'][0]['weatherDesc'][0]['value']
 
 	if not condition:
-		return city, int(temp), desc
+		return city, int(temp), desc, unit
 	else:
 		time = wwo['current_condition'][0]["observation_time"]
 		time = py_time.strptime(time, '%I:%M %p')
@@ -207,4 +211,4 @@ def weather_current(parameters, wwo):
 		for hour in wwo["weather"][0]['hourly']:
 			if hour['time'] == time:
 				condition = hour[condition]
-		return city, int(temp), desc, int(condition)
+		return city, int(temp), desc, int(condition), unit
