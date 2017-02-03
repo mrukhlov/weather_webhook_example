@@ -79,11 +79,11 @@ def weather(req):
 					city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
 					resp = weather_response_date(city, date, temp, unit, min_temp, max_temp)
 				elif date_period:
-					city, date_start, date_end, degree_list = weather_date_period(parameters, wwo)
-					resp = 'The weather in %s on period from %s till %s will be: %s' % (city, date_start, date_end, str(degree_list))
+					city, date_start, date_end, degree_list, condition_list = weather_date_period(parameters, wwo)
+					resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
 				elif time_period:
-					city, date_start, date_end, degree_list = weather_time_period(parameters, wwo)
-					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
+					city, time_start, time_end, degree_list, condition_list = weather_time_period(parameters, wwo)
+					resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
 			else:
 				'''else we just return current conditions'''
 				city, temp, desc, unit = weather_current(parameters, wwo)

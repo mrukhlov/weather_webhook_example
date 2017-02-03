@@ -123,21 +123,25 @@ def weather_date_period(parameters, wwo):
 	weather = wwo['weather']
 	for date in weather:
 		if datetime.strptime(date['date'], '%Y-%m-%d') >= datetime.strptime(dates[0], '%Y-%m-%d') or datetime.strptime(date['date'], '%Y-%m-%d') <= datetime.strptime(dates[1], '%Y-%m-%d'):
-			if condition:
-				for hour in date['hourly']:
-					if hour['time'] == '1200':
+			# if condition:
+			for hour in date['hourly']:
+				if hour['time'] == '1200':
+					if condition:
 						condition_list.append(hour[condition])
+					else:
+						condition_list.append(hour['weatherDesc'][0]["value"].lower())
 			if unit and unit == 'C':
-				degree_list.append((int(date['maxtempC']) + int(date['mintempC'])) / 2)
+				degree_list.append([(int(date['maxtempC']) + int(date['mintempC'])) / 2, int(date['maxtempC']), int(date['mintempC'])])
 			elif unit and unit == 'F':
-				degree_list.append((int(date['maxtempF']) + int(date['mintempF'])) / 2)
+				degree_list.append([(int(date['maxtempF']) + int(date['mintempF'])) / 2, int(date['maxtempF']), int(date['mintempF'])])
 			else:
-				degree_list.append((int(date['maxtempC']) + int(date['mintempC'])) / 2)
+				degree_list.append([(int(date['maxtempC']) + int(date['mintempC'])) / 2, int(date['maxtempC']), int(date['mintempC'])])
 
-	if not condition:
-		return city, dates[0], dates[1], degree_list
-	else:
-		return city, dates[0], dates[1], degree_list, condition_list
+	# if not condition:
+	# 	return city, dates[0], dates[1], degree_list
+	# else:
+	# 	return city, dates[0], dates[1], degree_list, condition_list
+	return city, dates[0], dates[1], degree_list, condition_list
 
 def weather_time_period(parameters, wwo):
 
@@ -169,6 +173,9 @@ def weather_time_period(parameters, wwo):
 		if params_hour_start == hour_data['time'] or params_hour_end == hour_data['time']:
 			if condition:
 				condition_list.append(hour_data[condition])
+			else:
+				condition_list.append(hour_data['weatherDesc'][0]["value"].lower())
+
 			if unit and unit == 'C':
 				degree_list.append(hour_data['tempC'])
 			elif unit and unit == 'F':
@@ -176,10 +183,11 @@ def weather_time_period(parameters, wwo):
 			else:
 				degree_list.append(hour_data['tempC'])
 
-	if not condition:
-		return city, hours[0], hours[1], degree_list
-	else:
-		return city, hours[0], hours[1], degree_list, condition_list
+	# if not condition:
+	# 	return city, hours[0], hours[1], degree_list
+	# else:
+	# 	return city, hours[0], hours[1], degree_list, condition_list
+	return city, hours[0], hours[1], degree_list, condition_list
 
 def weather_current(parameters, wwo):
 	print parameters
