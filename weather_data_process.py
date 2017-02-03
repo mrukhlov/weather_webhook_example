@@ -187,11 +187,12 @@ def weather_current(parameters, wwo):
 	unit = parameters.get('unit')
 	condition = parameters.get('condition')
 	city = address.get('city')
+	f_countries = ['BS', 'BZ', 'KY', 'US']
 
 	if unit and unit == 'C':
 		temp = wwo['current_condition'][0]['temp_C']
 		unit = 'celsius'
-	elif unit and unit == 'F':
+	elif unit and unit == 'F' or address['country_code'] in f_countries:
 		temp = wwo['current_condition'][0]['temp_F']
 		unit = 'fahrenheit'
 	else:
