@@ -56,8 +56,23 @@ def weather_date(parameters, wwo):
 
 	temp = (max_temp + min_temp) / 2
 
+	weather_data = {
+		'weather': {
+			"maxtempC": weather["maxtempC"],
+			"maxtempF": weather["maxtempF"],
+			"mintempC": weather["mintempC"],
+			"mintempF": weather["mintempF"],
+			"tempC": (int(weather["maxtempC"]) + int(weather["mintempC"])) / 2,
+			"tempF": (int(weather["maxtempF"]) + int(weather["mintempF"])) / 2,
+		},
+		"date": date,
+		"location": wwo["request"][0]["query"],
+		"logo": weather["hourly"][6]["weatherIconUrl"][0]["value"],
+		"description": weather["hourly"][6]["weatherDesc"][0]["value"]
+	}
+
 	if not condition:
-		return city, date, int(temp), unit, min_temp, max_temp
+		return city, date, int(temp), unit, min_temp, max_temp, weather_data
 	else:
 		time = wwo['current_condition'][0]["observation_time"]
 		time = py_time.strptime(time, '%I:%M %p')
@@ -69,7 +84,7 @@ def weather_date(parameters, wwo):
 			if hour['time'] == time:
 				condition = hour[condition]
 
-		return city, date, int(temp), unit, min_temp, max_temp, int(condition)
+		return city, date, int(temp), unit, min_temp, max_temp, int(condition), weather_data
 
 def weather_time(parameters, wwo):
 
@@ -102,10 +117,31 @@ def weather_time(parameters, wwo):
 				temp = hour_data['tempC']
 				unit = 'celsius'
 
+			weather_data_tempC = hour_data['tempC']
+			weather_data_tempF = hour_data['tempF']
+			weather_data_logo = hour_data["weatherIconUrl"][0]["value"]
+			weather_data_desc = hour_data["weatherDesc"][0]["value"]
+
+
+	weather_data = {
+		'weather': {
+			"maxtempC": weather["maxtempC"],
+			"maxtempF": weather["maxtempF"],
+			"mintempC": weather["mintempC"],
+			"mintempF": weather["mintempF"],
+			"tempC": weather_data_tempC,
+			"tempF": weather_data_tempF,
+		},
+		"date": date,
+		"location": wwo["request"][0]["query"],
+		"logo": weather_data_logo,
+		"description": weather_data_desc
+	}
+
 	if not condition:
-		return city, date, time, int(temp), unit
+		return city, date, time, int(temp), unit, weather_data
 	else:
-		return city, date, time, int(temp), unit, int(condition)
+		return city, date, time, int(temp), unit, int(condition), weather_data
 
 def weather_date_period(parameters, wwo):
 
@@ -119,29 +155,51 @@ def weather_date_period(parameters, wwo):
 
 	degree_list = []
 	condition_list = []
+	weather_data = {}
 	dates = date_period.split('/')
 	weather = wwo['weather']
 	for date in weather:
 		if datetime.strptime(date['date'], '%Y-%m-%d') >= datetime.strptime(dates[0], '%Y-%m-%d') or datetime.strptime(date['date'], '%Y-%m-%d') <= datetime.strptime(dates[1], '%Y-%m-%d'):
 			# if condition:
-			for hour in date['hourly']:
-				if hour['time'] == '1200':
+			for hour_data in date['hourly']:
+				if hour_data['time'] == '1200':
 					if condition:
-						condition_list.append(hour[condition])
+						condition_list.append(hour_data[condition])
 					else:
-						condition_list.append(hour['weatherDesc'][0]["value"].lower())
+						condition_list.append(hour_data['weatherDesc'][0]["value"].lower())
+
+					weather_data_logo = hour_data['weatherIconUrl'][0]["value"]
+					weather_data_desc = hour_data['weatherDesc'][0]["value"]
+
+			weather_data_tempC = (int(date['maxtempC']) + int(date['mintempC'])) / 2
+			weather_data_tempF = (int(date['maxtempF']) + int(date['mintempF'])) / 2
 			if unit and unit == 'C':
-				degree_list.append([(int(date['maxtempC']) + int(date['mintempC'])) / 2, int(date['maxtempC']), int(date['mintempC'])])
+				degree_list.append([weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])])
 			elif unit and unit == 'F':
-				degree_list.append([(int(date['maxtempF']) + int(date['mintempF'])) / 2, int(date['maxtempF']), int(date['mintempF'])])
+				degree_list.append([weather_data_tempF, int(date['maxtempF']), int(date['mintempF'])])
 			else:
-				degree_list.append([(int(date['maxtempC']) + int(date['mintempC'])) / 2, int(date['maxtempC']), int(date['mintempC'])])
+				degree_list.append([weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])])
+
+			weather_data[date] = {
+				'weather': {
+					"maxtempC": weather["maxtempC"],
+					"maxtempF": weather["maxtempF"],
+					"mintempC": weather["mintempC"],
+					"mintempF": weather["mintempF"],
+					"tempC": weather_data_tempC,
+					"tempF": weather_data_tempF,
+				},
+				"date": date,
+				"location": wwo["request"][0]["query"],
+				"logo": weather_data_logo,
+				"description": weather_data_desc
+			}
 
 	# if not condition:
 	# 	return city, dates[0], dates[1], degree_list
 	# else:
 	# 	return city, dates[0], dates[1], degree_list, condition_list
-	return city, dates[0], dates[1], degree_list, condition_list
+	return city, dates[0], dates[1], degree_list, condition_list, weather_data
 
 def weather_time_period(parameters, wwo):
 
@@ -156,8 +214,10 @@ def weather_time_period(parameters, wwo):
 	condition_list = []
 	hours = time_period.split('/')
 	weather = wwo['weather'][0]
+	date = weather['date']
 	start_time = hours[0]
 	end_time = hours[1]
+	weather_data = {}
 
 	if datetime.strptime(start_time, '%H:%M:%S').hour == 0:
 		params_hour_start = str(datetime.strptime(start_time, '%H:%M:%S').hour)
@@ -176,6 +236,11 @@ def weather_time_period(parameters, wwo):
 			else:
 				condition_list.append(hour_data['weatherDesc'][0]["value"].lower())
 
+			weather_data_tempC = hour_data['tempC']
+			weather_data_tempF = hour_data['tempF']
+			weather_data_logo = hour_data["weatherIconUrl"][0]["value"]
+			weather_data_desc = hour_data["weatherDesc"][0]["value"]
+
 			if unit and unit == 'C':
 				degree_list.append(hour_data['tempC'])
 			elif unit and unit == 'F':
@@ -183,19 +248,36 @@ def weather_time_period(parameters, wwo):
 			else:
 				degree_list.append(hour_data['tempC'])
 
+			weather_data[hour_data['time']] = {
+				'weather': {
+					"maxtempC": weather["maxtempC"],
+					"maxtempF": weather["maxtempF"],
+					"mintempC": weather["mintempC"],
+					"mintempF": weather["mintempF"],
+					"tempC": weather_data_tempC,
+					"tempF": weather_data_tempF,
+				},
+				"date": date,
+				"location": wwo["request"][0]["query"],
+				"logo": weather_data_logo,
+				"description": weather_data_desc
+			}
+
 	# if not condition:
 	# 	return city, hours[0], hours[1], degree_list
 	# else:
 	# 	return city, hours[0], hours[1], degree_list, condition_list
-	return city, hours[0], hours[1], degree_list, condition_list
+	return city, hours[0], hours[1], degree_list, condition_list, weather_data
 
 def weather_current(parameters, wwo):
-	print parameters
+
 	address = parameters.get('address')
 	unit = parameters.get('unit')
 	condition = parameters.get('condition')
 	city = address.get('city')
 	f_countries = ['BS', 'BZ', 'KY', 'US']
+	weather = wwo['weather'][0]
+	date = weather['date']
 
 	if unit and unit == 'C':
 		temp = wwo['current_condition'][0]['temp_C']
@@ -208,8 +290,23 @@ def weather_current(parameters, wwo):
 		unit = 'celsius'
 	desc = wwo['current_condition'][0]['weatherDesc'][0]['value']
 
+	weather_data = {
+		'weather': {
+			"maxtempC": weather["maxtempC"],
+			"maxtempF": weather["maxtempF"],
+			"mintempC": weather["mintempC"],
+			"mintempF": weather["mintempF"],
+			"tempC": (int(weather["maxtempC"]) + int(weather["mintempC"])) / 2,
+			"tempF": (int(weather["maxtempF"]) + int(weather["mintempF"])) / 2,
+		},
+		"date": date,
+		"location": wwo["request"][0]["query"],
+		"logo": weather["hourly"][6]["weatherIconUrl"][0]["value"],
+		"description": weather["hourly"][6]["weatherDesc"][0]["value"]
+	}
+
 	if not condition:
-		return city, int(temp), desc, unit
+		return city, int(temp), desc, unit, weather_data
 	else:
 		time = wwo['current_condition'][0]["observation_time"]
 		time = py_time.strptime(time, '%I:%M %p')
@@ -220,4 +317,4 @@ def weather_current(parameters, wwo):
 		for hour in wwo["weather"][0]['hourly']:
 			if hour['time'] == time:
 				condition = hour[condition]
-		return city, int(temp), desc, int(condition), unit
+		return city, int(temp), desc, int(condition), unit, weather_data

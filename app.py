@@ -1,6 +1,13 @@
 import os
 from wwo_api import wwo_weather_get
-from weather_response import *
+
+from weather_response import (
+	weather_response_current,
+	weather_response_date,
+	weather_response_time_period,
+	weather_response_date_period
+)
+
 from weather_data_process import (
 	weather_current,
 	weather_date,
@@ -73,20 +80,20 @@ def weather(req):
 				time_period = date_time.get('time-period')
 
 				if time:
-					city, date, time, temp, unit = weather_time(parameters, wwo)
+					city, date, time, temp, unit, weather_data = weather_time(parameters, wwo)
 					resp = 'Weather in %s on %s %s will be %s degrees %s.' % (city, date, time, temp, unit)
 				if date and not time:
-					city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
+					city, date, temp, unit, min_temp, max_temp, weather_data = weather_date(parameters, wwo)
 					resp = weather_response_date(city, date, temp, unit, min_temp, max_temp)
 				elif date_period:
-					city, date_start, date_end, degree_list, condition_list = weather_date_period(parameters, wwo)
+					city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
 					resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
 				elif time_period:
-					city, time_start, time_end, degree_list, condition_list = weather_time_period(parameters, wwo)
+					city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
 					resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, unit = weather_current(parameters, wwo)
+				city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
 				resp = weather_response_current(city, temp, desc, unit)
 		else:
 			resp = error
@@ -126,7 +133,7 @@ def weather_activity(req):
 				time_period = date_time.get('time-period')
 
 				if time:
-					city, date, time, temp, unit = weather_time(parameters, wwo)
+					city, date, time, temp, unit, weather_data = weather_time(parameters, wwo)
 					if activity in winter_activity:
 						if temp < 0:
 							resp = 'Weather in %s on %s %s will be %s degrees %s. Perfect conditions for %s!' % (city, date, time, temp, unit, activity)
@@ -138,7 +145,7 @@ def weather_activity(req):
 						else:
 							resp = 'Weather in %s on %s %s will be %s degrees %s. Not a best weather for %s.' % (city, date, time, temp, unit, activity)
 				if date and not time:
-					city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
+					city, date, temp, unit, min_temp, max_temp, weather_data = weather_date(parameters, wwo)
 					if activity in winter_activity:
 						if temp < 0:
 							resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Perfect weather for %s!' % (city, date, temp, unit, min_temp, max_temp, activity)
@@ -150,14 +157,14 @@ def weather_activity(req):
 						else:
 							resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Not a best weathe for %s.' % (city, date, temp, unit, min_temp, max_temp, activity)
 				elif date_period:
-					city, date_start, date_end, degree_list = weather_date_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_date_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s. What a weather for %s.' % (city, date_start, date_end, str(degree_list), activity)
 				elif time_period:
-					city, date_start, date_end, degree_list = weather_time_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_time_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s. What a weather for %s.' % (city, date_start, date_end, str(degree_list), activity)
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, unit = weather_current(parameters, wwo)
+				city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
 				if activity in winter_activity:
 					if temp < 0:
 						resp = 'Weather in %s is %s degrees %s. %s. What a perfect weather for %s!' % (city, temp, unit, desc, activity)
@@ -228,20 +235,20 @@ def weather_condition(req):
 				time_period = date_time.get('time-period')
 
 				if time:
-					city, date, time, temp, unit, condition = weather_time(parameters, wwo)
+					city, date, time, temp, unit, condition, weather_data = weather_time(parameters, wwo)
 					resp = 'Weather in %s on %s %s will be %s degrees %s. Chance of %s is %s percent.' % (city, date, time, temp, unit, condition_original, condition)
 				if date and not time:
-					city, date, temp, unit, min_temp, max_temp, condition = weather_date(parameters, wwo)
+					city, date, temp, unit, min_temp, max_temp, condition, weather_data = weather_date(parameters, wwo)
 					resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Chance of %s is %s percent.' % (city, date, temp, unit, min_temp, max_temp, condition_original, condition)
 				elif date_period:
-					city, date_start, date_end, degree_list, condition_list = weather_date_period(parameters, wwo)
+					city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s. Chance of %s is %s percent.' % (city, date_start, date_end, str(degree_list), condition_original, str(condition_list))
 				elif time_period:
-					city, date_start, date_end, degree_list, condition_list = weather_time_period(parameters, wwo)
+					city, date_start, date_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s. Chance of %s is %s percent.' % (city, date_start, date_end, str(degree_list), condition_original, str(condition_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, condition, unit = weather_current(parameters, wwo)
+				city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
 				resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent.' % (city, temp, unit, desc, condition_original, condition)
 		else:
 			resp = error
@@ -308,7 +315,7 @@ def weather_outfit(req):
 
 				if time:
 					if outfit in rain or outfit in snow or outfit in sun:
-						city, date, time, temp, unit, condition = weather_time(parameters, wwo)
+						city, date, time, temp, unit, condition, weather_data = weather_time(parameters, wwo)
 						if outfit in cold_weather or outfit in warm_weather or outfit in hot_weather:
 							# to change maybe
 							if condition > 50:
@@ -321,7 +328,7 @@ def weather_outfit(req):
 							else:
 								resp = 'Weather in %s on %s %s will be %s degrees %s. Chance of %s is %s percent. You probably don\'t need %s.' % (city, date, time, temp, unit, condition_original, condition, outfit)
 					else:
-						city, date, time, temp, unit = weather_time(parameters, wwo)
+						city, date, time, temp, unit, weather_data = weather_time(parameters, wwo)
 						if temp_limit > 0:
 							if temp > temp_limit:
 								resp = 'Weather in %s on %s %s will be %s degrees %s. Probably it\'s too hot for %s.' % (city, date, time, temp, unit, outfit)
@@ -334,13 +341,13 @@ def weather_outfit(req):
 								resp = 'Weather in %s on %s %s will be %s degrees %s. Weather is cold, please wear %s!' % (city, date, time, temp, unit, outfit)
 				if date and not time:
 					if outfit in rain or outfit in snow or outfit in sun:
-						city, date, temp, unit, min_temp, max_temp, condition = weather_date(parameters, wwo)
+						city, date, temp, unit, min_temp, max_temp, condition, weather_data = weather_date(parameters, wwo)
 						if condition > 50:
 							resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Chance of %s is %s percent. You probably need %s.' % (city, date, temp, unit, min_temp, max_temp, condition_original, condition, outfit)
 						else:
 							resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Chance of %s is %s percent. You probably don\'t need %s.' % (city, date, temp, unit, min_temp, max_temp, condition_original, condition, outfit)
 					else:
-						city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
+						city, date, temp, unit, min_temp, max_temp, weather_data = weather_date(parameters, wwo)
 						if temp_limit > 0:
 							if temp > temp_limit:
 								resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Probably it\'s too hot for %s.' % (city, date, temp, unit, min_temp, max_temp, outfit)
@@ -352,14 +359,14 @@ def weather_outfit(req):
 							else:
 								resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. Weather is cold, please wear %s!' % (city, date, temp, unit, min_temp, max_temp, outfit)
 				elif date_period:
-					city, date_start, date_end, degree_list = weather_date_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_date_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s' % (city, date_start, date_end, str(degree_list))
 				elif time_period:
-					city, date_start, date_end, degree_list = weather_time_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_time_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, condition, unit = weather_current(parameters, wwo)
+				city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
 				if outfit in rain or outfit in snow or outfit in sun:
 					if condition > 50:
 						resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent. You probably need %s.' % (city, temp, unit, desc, condition_original, condition, outfit)
@@ -422,7 +429,7 @@ def weather_temperature(req):
 				time_period = date_time.get('time-period')
 
 				if time:
-					city, date, time, temp, unit = weather_time(parameters, wwo)
+					city, date, time, temp, unit, weather_data = weather_time(parameters, wwo)
 					if not temperature:
 						resp = 'Weather in %s on %s %s will be %s degrees %s.' % (city, date, time, temp, unit)
 					else:
@@ -437,7 +444,7 @@ def weather_temperature(req):
 							else:
 								resp = 'Weather in %s on %s %s will be %s degrees %s.' % (city, date, time, temp, unit)
 				if date and not time:
-					city, date, temp, unit, min_temp, max_temp = weather_date(parameters, wwo)
+					city, date, temp, unit, min_temp, max_temp, weather_data = weather_date(parameters, wwo)
 					if not temperature:
 						resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s.' % (city, date, temp, unit, min_temp, max_temp)
 					else:
@@ -452,10 +459,10 @@ def weather_temperature(req):
 							else:
 								resp = 'Weather in %s on %s will be %s degrees %s. Minimum %s degrees and maximum %s. It\'s definitely %s outside.' % (city, date, temp, unit, min_temp, max_temp, temperature)
 				elif date_period:
-					city, date_start, date_end, degree_list = weather_date_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_date_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s' % (city, date_start, date_end, str(degree_list))
 				elif time_period:
-					city, date_start, date_end, degree_list = weather_time_period(parameters, wwo)
+					city, date_start, date_end, degree_list, weather_data = weather_time_period(parameters, wwo)
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
 			elif unit:
 				global unit_global
@@ -463,7 +470,7 @@ def weather_temperature(req):
 				resp = 'Okay, i will show weather in %s.' % (unit_global)
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, unit = weather_current(parameters, wwo)
+				city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
 				if not temperature:
 					resp = 'Weather in %s is %s degrees %s. %s.' % (city, temp, unit, desc)
 				else:
