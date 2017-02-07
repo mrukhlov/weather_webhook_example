@@ -273,6 +273,7 @@ def weather_outfit(req):
 	date_time = parameters.get('date-time')
 	city = address.get('city')
 	outfit = parameters.get('outfit')
+	condition = parameters.get('condition')
 
 	unit = parameters.get('unit')
 	if not unit:
@@ -298,6 +299,9 @@ def weather_outfit(req):
 				parameters['condition'] = 'chanceofsunshine'
 				parameters['condition_original'] = 'sun'
 			condition_original = parameters['condition_original']
+	else:
+		resp = 'You forgot to specify your outfit.'
+		return {"speech": resp, "displayText": resp}
 
 	if city:
 
@@ -366,7 +370,10 @@ def weather_outfit(req):
 					resp = 'The weather in %s on period from %s till %s will be: %s.' % (city, date_start, date_end, str(degree_list))
 			else:
 				'''else we just return current conditions'''
-				city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
+				if condition:
+					city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
+				else:
+					city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
 				if outfit in rain or outfit in snow or outfit in sun:
 					if condition > 50:
 						resp = 'Weather in %s is %s degrees %s. %s. Chance of %s is %s percent. You probably need %s.' % (city, temp, unit, desc, condition_original, condition, outfit)
