@@ -305,7 +305,6 @@ def weather_current(parameters, wwo):
 		"logo": weather["hourly"][6]["weatherIconUrl"][0]["value"],
 		"description": weather["hourly"][6]["weatherDesc"][0]["value"]
 	}
-
 	if not condition:
 		return city, int(temp), desc, unit, weather_data
 	else:

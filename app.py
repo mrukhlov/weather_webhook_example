@@ -273,7 +273,6 @@ def weather_outfit(req):
 	date_time = parameters.get('date-time')
 	city = address.get('city')
 	outfit = parameters.get('outfit')
-	condition = parameters.get('condition')
 
 	unit = parameters.get('unit')
 	if not unit:
@@ -302,6 +301,7 @@ def weather_outfit(req):
 	else:
 		resp = 'You forgot to specify your outfit.'
 		return {"speech": resp, "displayText": resp}
+	condition = parameters.get('condition')
 
 	if city:
 
