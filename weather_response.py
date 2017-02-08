@@ -2,7 +2,7 @@ from datetime import datetime
 import random
 
 def weather_response_current(city, temp, desc, unit):
-	res = 'Now in %s is %s and %s.' % (city, temp, desc)
+	res = 'Now in %s is %s degrees %s and %s.' % (city, temp, unit, desc)
 	return res
 
 def weather_response_time():

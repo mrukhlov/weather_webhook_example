@@ -64,6 +64,7 @@ def weather(req):
 	if not unit:
 		if len(unit_global) > 0:
 			parameters['unit'] = unit_global
+	# context = req['contexts']
 
 	if city:
 
