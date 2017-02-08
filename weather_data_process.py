@@ -180,12 +180,12 @@ def weather_date_period(parameters, wwo):
 			else:
 				degree_list.append([weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])])
 
-			weather_data[date] = {
+			weather_data[date['date']] = {
 				'weather': {
-					"maxtempC": weather["maxtempC"],
-					"maxtempF": weather["maxtempF"],
-					"mintempC": weather["mintempC"],
-					"mintempF": weather["mintempF"],
+					"maxtempC": weather[0]["maxtempC"],
+					"maxtempF": weather[0]["maxtempF"],
+					"mintempC": weather[0]["mintempC"],
+					"mintempF": weather[0]["mintempF"],
 					"tempC": weather_data_tempC,
 					"tempF": weather_data_tempF,
 				},
