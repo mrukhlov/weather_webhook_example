@@ -157,7 +157,7 @@ def weather_response_date_period(city, date_start, date_end, degree_list, condit
 		degree_list_min = sum([i[1] for i in degree_list])/len(degree_list)
 		degree_list_max = sum([i[2] for i in degree_list])/len(degree_list)
 		# res = 'The weather in %s on period from %s till %s will be: %s' % (city, date_start, date_end, str(degree_list))
-		res = 'During period from %s till %s you can expect %s, with a low of %s and a high of %s.' % (date_start, date_end, random.choice(condition_list), degree_list_min, degree_list_max)
+		res = 'During period from %s till %s in %s you can expect %s, with a low of %s and a high of %s.' % (date_start, date_end, city, random.choice(condition_list), degree_list_min, degree_list_max)
 	return res
 
 def weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity):
