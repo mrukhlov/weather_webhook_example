@@ -38,7 +38,7 @@ log = app.logger
 
 apikey = '7UmuyhWz6qteGNoQRusNzXA9M0Ccwlf8'
 
-unit_global = ''
+unit_global = 'F'
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
