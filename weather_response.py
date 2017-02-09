@@ -16,6 +16,7 @@ def weather_response_current(city, temp, desc, unit):
 	return res
 
 def weather_response_time(city, date, time, temp, unit, desc):
+	temp = str(temp) + '°F'
 	time = datetime.strftime(datetime.strptime(time, '%H:%M:%S'), '%H:%M')
 	string_list = [
 		'Today at {time} it will be between {temperature} and {condition}.',
@@ -28,6 +29,7 @@ def weather_response_time(city, date, time, temp, unit, desc):
 	return res
 
 def weather_response_date_time(city, date, time, temp, unit, desc):
+	temp = str(temp) + '°F'
 	time = datetime.strftime(datetime.strptime(time, '%H:%M:%S'), '%H:%M')
 	date = datetime.strptime(date, '%Y-%m-%d')
 	if date == datetime.today().day or date ==  - datetime.today().day == 1:
@@ -143,7 +145,8 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 			'It will be {condition} and around {temperature} this {time_period}.',
 		]
 		output_string = random.choice(string_list)
-		res = output_string.format(time_period=time_period, temperature=degree_list[0], condition=condition_list[0])
+		temp = str(degree_list[0]) + '°F'
+		res = output_string.format(time_period=time_period, temperature=temp, condition=condition_list[0])
 	else:
 		res = 'The weather in %s on period from %s till %s will be: %s.' % (city, time_start, time_end, str(degree_list))
 	return res
