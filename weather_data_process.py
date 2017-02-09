@@ -32,6 +32,22 @@ def adress_getter(parameters):
 
 	return parameters
 
+def date_time_proc(parameters):
+	date_time_date = parameters['date-time']
+	if date_time_date.find('/') > -1:
+		if date_time_date.find(':') > -1:
+			parameters['date-time'] = {'time-period':date_time_date}
+		elif date_time_date.find('-') > -1:
+			parameters['date-time'] = {'date-period':date_time_date}
+	else:
+		if date_time_date.find('T') > -1:
+			parameters['date-time'] = {'date-and-time':date_time_date}
+		elif date_time_date.find(':') > -1:
+			parameters['date-time'] = {'time':date_time_date}
+		elif date_time_date.find('-') > -1:
+			parameters['date-time'] = {'date':date_time_date}
+	return parameters
+
 def weather_date(parameters, wwo):
 
 	address = parameters.get('address')
@@ -55,6 +71,7 @@ def weather_date(parameters, wwo):
 		unit = 'celsius'
 
 	temp = (max_temp + min_temp) / 2
+	desc = weather["hourly"][6]["weatherDesc"][0]["value"].lower()
 
 	weather_data = {
 		'weather': {
@@ -72,7 +89,7 @@ def weather_date(parameters, wwo):
 	}
 
 	if not condition:
-		return city, date, int(temp), unit, min_temp, max_temp, weather_data
+		return city, date, int(temp), unit, min_temp, max_temp, weather_data, desc
 	else:
 		time = wwo['current_condition'][0]["observation_time"]
 		time = py_time.strptime(time, '%I:%M %p')
@@ -84,7 +101,7 @@ def weather_date(parameters, wwo):
 			if hour['time'] == time:
 				condition = hour[condition]
 
-		return city, date, int(temp), unit, min_temp, max_temp, int(condition), weather_data
+		return city, date, int(temp), unit, min_temp, max_temp, int(condition), weather_data, desc
 
 def weather_time(parameters, wwo):
 
@@ -94,7 +111,11 @@ def weather_time(parameters, wwo):
 	condition = parameters.get('condition')
 
 	city = address.get('city')
-	time = date_time.get('time')
+	date_and_time = date_time.get('date-and-time')
+	if date_and_time:
+		time = datetime.strftime(datetime.strptime(date_and_time, '%Y-%m-%dT%H:%M:%SZ'), '%H:%M:%S')
+	else:
+		time = date_time.get('time')
 	weather = wwo['weather'][0]
 	date = weather['date']
 
@@ -120,7 +141,7 @@ def weather_time(parameters, wwo):
 			weather_data_tempC = hour_data['tempC']
 			weather_data_tempF = hour_data['tempF']
 			weather_data_logo = hour_data["weatherIconUrl"][0]["value"]
-			weather_data_desc = hour_data["weatherDesc"][0]["value"]
+			weather_data_desc = hour_data["weatherDesc"][0]["value"].lower()
 
 
 	weather_data = {
@@ -139,9 +160,9 @@ def weather_time(parameters, wwo):
 	}
 
 	if not condition:
-		return city, date, time, int(temp), unit, weather_data
+		return city, date, time, int(temp), unit, weather_data_desc, weather_data
 	else:
-		return city, date, time, int(temp), unit, int(condition), weather_data
+		return city, date, time, int(temp), unit, weather_data_desc, int(condition), weather_data
 
 def weather_date_period(parameters, wwo):
 
@@ -169,7 +190,7 @@ def weather_date_period(parameters, wwo):
 						condition_list.append(hour_data['weatherDesc'][0]["value"].lower())
 
 					weather_data_logo = hour_data['weatherIconUrl'][0]["value"]
-					weather_data_desc = hour_data['weatherDesc'][0]["value"]
+					weather_data_desc = hour_data['weatherDesc'][0]["value"].lower()
 
 			weather_data_tempC = (int(date['maxtempC']) + int(date['mintempC'])) / 2
 			weather_data_tempF = (int(date['maxtempF']) + int(date['mintempF'])) / 2
@@ -239,7 +260,7 @@ def weather_time_period(parameters, wwo):
 			weather_data_tempC = hour_data['tempC']
 			weather_data_tempF = hour_data['tempF']
 			weather_data_logo = hour_data["weatherIconUrl"][0]["value"]
-			weather_data_desc = hour_data["weatherDesc"][0]["value"]
+			weather_data_desc = hour_data["weatherDesc"][0]["value"].lower()
 
 			if unit and unit == 'C':
 				degree_list.append(hour_data['tempC'])
@@ -289,7 +310,7 @@ def weather_current(parameters, wwo):
 	else:
 		temp = wwo['current_condition'][0]['temp_C']
 		unit = 'celsius'
-	desc = wwo['current_condition'][0]['weatherDesc'][0]['value']
+	desc = wwo['current_condition'][0]['weatherDesc'][0]['value'].lower()
 
 	weather_data = {
 		'weather': {
@@ -303,7 +324,7 @@ def weather_current(parameters, wwo):
 		"date": date,
 		"location": wwo["request"][0]["query"],
 		"logo": weather["hourly"][6]["weatherIconUrl"][0]["value"],
-		"description": weather["hourly"][6]["weatherDesc"][0]["value"]
+		"description": weather["hourly"][6]["weatherDesc"][0]["value"].lower()
 	}
 	if not condition:
 		return city, int(temp), desc, unit, weather_data

@@ -45,16 +45,18 @@ def wwo_weather_get(parameters, number_of_days=1):
 			wwo_data['cc'] = 'no'
 
 		time = date_time.get('time')
+		date_and_time = date_time.get('date-and-time')
 
-		if date and time:
+		if date_and_time:
+			date = datetime.strftime(datetime.strptime(date_and_time, '%Y-%m-%dT%H:%M:%SZ'), '%Y-%m-%d')
 			wwo_data['fx'] = 'yes'
 			wwo_data['date'] = date
 			wwo_data['cc'] = 'no'
-		elif date:
+		if date:
 			wwo_data['fx'] = 'yes'
 			wwo_data['date'] = date
 			# wwo_data['cc'] = 'no'
-		else:
+		if time:
 			wwo_data['fx'] = 'yes'
 			# wwo_data['cc'] = 'no'
 	else:
