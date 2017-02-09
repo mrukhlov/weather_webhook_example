@@ -164,12 +164,12 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
 
 	if activity in winter_activity or activity in demi_activity:
 		if temp < 0:
-			resp = 'Perfect conditions for %s!' % (activity)
+			resp = 'What a nice weather for %s!' % (activity)
 		else:
 			resp = 'Not a best weather for %s.' % (activity)
 	elif activity in summer_activity or activity in demi_activity:
 		if temp > 0:
-			resp = 'Perfect conditions for %s!' % (activity)
+			resp = 'What a nice weather for %s!' % (activity)
 		else:
 			resp = 'Not a best weather for %s.' % (activity)
 
