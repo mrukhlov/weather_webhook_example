@@ -68,10 +68,11 @@ def weather(req):
 	# parameters = adress_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	if address:
+		city = address.get('city')
 	if parameters.get('date-time'):
 		parameters = date_time_proc(parameters)
 	date_time = parameters.get('date-time')
-	city = address.get('city')
 	unit = parameters.get('unit')
 	if not unit:
 		if len(unit_global) > 0:
@@ -128,7 +129,8 @@ def weather_activity(req):
 	# parameters = adress_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
-	city = address.get('city')
+	if address:
+		city = address.get('city')
 	if parameters.get('date-time'):
 		parameters = date_time_proc(parameters)
 	date_time = parameters.get('date-time')
@@ -190,10 +192,11 @@ def weather_condition(req):
 	# parameters = adress_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	if address:
+		city = address.get('city')
 	if parameters.get('date-time'):
 		parameters = date_time_proc(parameters)
 	date_time = parameters.get('date-time')
-	city = address.get('city')
 	condition = parameters.get('condition')
 	unit = parameters.get('unit')
 	if not unit:
@@ -279,10 +282,11 @@ def weather_outfit(req):
 	# parameters = adress_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	if address:
+		city = address.get('city')
 	if parameters.get('date-time'):
 		parameters = date_time_proc(parameters)
 	date_time = parameters.get('date-time')
-	city = address.get('city')
 	outfit = parameters.get('outfit')
 
 	unit = parameters.get('unit')
@@ -375,10 +379,11 @@ def weather_temperature(req):
 	# parameters = adress_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	if address:
+		city = address.get('city')
 	if parameters.get('date-time'):
 		parameters = date_time_proc(parameters)
 	date_time = parameters.get('date-time')
-	city = address.get('city')
 	temperature = parameters['temperature']
 
 	unit = parameters.get('unit')
