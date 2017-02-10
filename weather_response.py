@@ -88,7 +88,7 @@ def weather_response_date_time(city, date, time, temp, unit, desc):
 	string_list = [
 		'{day} in {place} at {time} it will be around {temperature} and {condition}.',
 		'{day} in {place} at {time} you can expect it to be around {temperature} and {condition}.',
-		'{day} in {place} at {time} you can expect {condition}, with the temperatures around {temperature}.',
+		'{day} in {place} at {time} you can expect {condition}, with the temperature around {temperature}.',
 		'{day} in {place} at {time} will be {condition}, {temperature}.',
 		'At {time} on {day} in {place} it will be {temperature} and {condition}.'
 	]
@@ -108,8 +108,8 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 		string_list = [
 			'{day} in {place} it will be around {temperature} and {condition}.',
 			'{day} in {place} you can expect it to be around {temperature} and {condition}.',
-			'{day} in {place} you can expect {condition}, with temperatures around {temperature}.',
-			'{day} in {place} will be {condition}, and temperatures will around from {temperature}.',
+			'{day} in {place} you can expect {condition}, with temperature around {temperature}.',
+			'{day} in {place} will be {condition}, and temperature will around from {temperature}.',
 		]
 		output_string = random.choice(string_list)
 		res = output_string.format(place=city, day=day, temperature=temp, condition=desc.lower())
@@ -173,8 +173,8 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 
 		string_list = [
 			'This {time_period} in {place} it will be {temperature} and {condition}.',
-			'This {time_period} in {place} you can expect {condition}, with temperatures around {temperature}.',
-			'Expect a {condition} {time_period} in {place}, with temperatures around {temperature}.',
+			'This {time_period} in {place} you can expect {condition}, with temperature around {temperature}.',
+			'Expect a {condition} {time_period} in {place}, with temperature around {temperature}.',
 			'It will be {condition} in {place} and around {temperature} this {time_period}.',
 		]
 		output_string = random.choice(string_list)
