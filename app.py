@@ -223,7 +223,7 @@ def weather_condition(req):
     if not unit:
         if len(unit_global) > 0:
             parameters['unit'] = unit_global
-
+    condition_list = []
     if condition in unsupported:
         error = 'Unsupported condition'
         return {"speech": error, "displayText": error}
@@ -261,14 +261,14 @@ def weather_condition(req):
                     city, date_start, date_end, degree_list, condition_list, weather_data = \
                         weather_date_period(parameters, wwo)
                     weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list)
+                        city, date_start, date_end, degree_list, condition_list, condition_original)
                 elif time_period:
                     city, time_start, time_end, degree_list, condition_list, weather_data = \
                         weather_time_period(parameters, wwo)
                     weather_resp = weather_response_time_period(
                         city, time_start, time_end, degree_list, condition_list)
-                resp = str(weather_resp) + str(
-                    weather_response_condition(condition_original, condition))
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_condition(condition_original, condition, condition_list))
             else:
                 '''else we just return current conditions'''
                 city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
@@ -362,7 +362,7 @@ def weather_outfit(req):
                     city, date_start, date_end, degree_list, condition_list, weather_data = \
                         weather_date_period(parameters, wwo)
                     weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list)
+                        city, date_start, date_end, degree_list, condition_list, condition_original)
                     temp = sum([i[0] for i in degree_list]) / len(degree_list)
                 elif time_period:
                     city, time_start, time_end, degree_list, condition_list, weather_data = \

@@ -53,13 +53,13 @@ def weather_response_time(city, date, time, temp, unit, desc):
 	temp = str(temp) + '°F'
 	time = datetime.strftime(datetime.strptime(time, '%H:%M:%S'), '%H:%M')
 	string_list = [
-		'Today at {time} it will be between {temperature} and {condition}.',
-		'Today at {time} you can expect it to be between {temperature} and {condition}.',
-		'Today at {time} you can expect {condition}, with temperatures between {temperature}.',
-		'Today at {time} will be {condition}, and temperatures will range from {temperature}.',
+		'Today in {place} at {time} it will be around {temperature} and {condition}.',
+		'Today in {place} at {time} you can expect it to be around {temperature} and {condition}.',
+		'Today in {place} at {time} you can expect {condition}, with temperatures around {temperature}.',
+		'Today in {place} at {time} will be {condition}, and temperatures will range from {temperature}.',
 	]
 	output_string = random.choice(string_list)
-	res = output_string.format(time=time, temperature=temp, condition=desc.lower())
+	res = output_string.format(palce = city, time=time, temperature=temp, condition=desc.lower())
 	return res
 
 def weather_response_date_time(city, date, time, temp, unit, desc):
@@ -86,9 +86,9 @@ def weather_response_date_time(city, date, time, temp, unit, desc):
 			day = date
 
 	string_list = [
-		'{day} in {place} at {time} it will be between {temperature} and {condition}.',
-		'{day} in {place} at {time} you can expect it to be between {temperature} and {condition}.',
-		'{day} in {place} at {time} you can expect {condition}, with temperatures between {temperature}.',
+		'{day} in {place} at {time} it will be around {temperature} and {condition}.',
+		'{day} in {place} at {time} you can expect it to be around {temperature} and {condition}.',
+		'{day} in {place} at {time} you can expect {condition}, with temperatures around {temperature}.',
 		'{day} in {place} at {time} will be {condition}, and temperatures will range from {temperature}.',
 		'At {time} on {day} in {place} it will be {temperature} and {condition}.'
 	]
@@ -106,13 +106,13 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 		if datetime.strptime(date, '%Y-%m-%d').day - datetime.today().day == 1:
 			day = 'Tomorrow'
 		string_list = [
-			'{day} it will be between {temperature} and {condition}.',
-			'{day} you can expect it to be between {temperature} and {condition}.',
-			'{day} you can expect {condition}, with temperatures between {temperature}.',
-			'{day} will be {condition}, and temperatures will range from {temperature}.',
+			'{day} in {place} it will be around {temperature} and {condition}.',
+			'{day} in {place} you can expect it to be around {temperature} and {condition}.',
+			'{day} in {place} you can expect {condition}, with temperatures around {temperature}.',
+			'{day} in {place} will be {condition}, and temperatures will range from {temperature}.',
 		]
 		output_string = random.choice(string_list)
-		res = output_string.format(day=day, temperature=temp, condition=desc.lower())
+		res = output_string.format(place=city, day=day, temperature=temp, condition=desc.lower())
 	else:
 		if datetime.strptime(date, '%Y-%m-%d').day - datetime.today().day < 8:
 			weekday = datetime.strptime(date, '%Y-%m-%d').isoweekday()
@@ -123,25 +123,25 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 						'On Saturday in {place} it will be {condition}, with temperatures from {temperatureMin} to {temperatureMax}.',
 						'Saturday in {place} should be {condition}, with temperatures from {temperatureMin} to {temperatureMax}.',
 						'Saturday in {place} is expected to be {condition}, with temperatures ranging from {temperatureMin} to {temperatureMax}.',
-						'You can expect Saturday in {place} to be {condition}, with temperatures between {temperatureMin} and {temperatureMax}.'
+						'You can expect Saturday in {place} to be {condition}, with temperatures around {temperatureMin} and {temperatureMax}.'
 					]
 					output_string = random.choice(string_list)
 					res = output_string.format(place=city, condition=desc.lower(), temperatureMin=min_temp, temperatureMax=max_temp)
 				else:
 					string_list = [
-						'And Sunday should be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
-						'Sunday you can expect {condition}, with temperatures between {temperatureMin} and {temperatureMax}.',
-						'On Sunday it will be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
-						'Sunday should be {condition}, with temperatures from {temperatureMin} to {temperatureMax}.'
+						'Sunday in {place} should be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
+						'Sunday in {place} you can expect {condition}, with temperatures around {temperatureMin} and {temperatureMax}.',
+						'On Sunday in {place} it will be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
+						'Sunday in {place} should be {condition}, with temperatures from {temperatureMin} to {temperatureMax}.'
 					]
 					output_string = random.choice(string_list)
 					res = output_string.format(place=city, condition=desc.lower(), temperatureMin=min_temp, temperatureMax=max_temp)
 			else:
 				string_list = [
-					'On {date} it will be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
-					'On {date} it\'s expected to be {condition} with temperatures from {temperatureMin} to {temperatureMax}.',
-					'The forecast for {date} is {condition}, with temperatures ranging from {temperatureMin} to {temperatureMax}.',
-					'{date} is expected to be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.'
+					'On {date} in {place} it will be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.',
+					'On {date} in {place} it\'s expected to be {condition} with temperatures from {temperatureMin} to {temperatureMax}.',
+					'The forecast for {date} in {place} is {condition}, with temperatures ranging from {temperatureMin} to {temperatureMax}.',
+					'{date in {place}} is expected to be {condition}, with a low of {temperatureMin} and a high of {temperatureMax}.'
 				]
 				output_string = random.choice(string_list)
 				res = output_string.format(date=weekday_str, place=city, condition=desc.lower(), temperatureMin=min_temp, temperatureMax=max_temp)
@@ -155,7 +155,6 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 			]
 			output_string = random.choice(string_list)
 			res = output_string.format(date=date, place=city, condition=desc.lower(), temperatureMin=min_temp, temperatureMax=max_temp)
-		# res = 'On %s in %s it will be %s, with a low of %s and a high of %s.' % (date, city, temp, min_temp, max_temp)
 	return res
 
 def weather_response_time_period(city, time_start, time_end, degree_list, condition_list):
@@ -173,26 +172,30 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 			time_period = 'morning'
 
 		string_list = [
-			'This {time_period} it will be {temperature} and {condition}.',
-			'This {time_period} you can expect {condition}, with temperatures around {temperature}.',
-			'Expect a {condition} {time_period}, with temperatures around {temperature}.',
-			'It will be {condition} and around {temperature} this {time_period}.',
+			'This {time_period} in {place} it will be {temperature} and {condition}.',
+			'This {time_period} in {place} you can expect {condition}, with temperatures around {temperature}.',
+			'Expect a {condition} {time_period} in {place}, with temperatures around {temperature}.',
+			'It will be {condition} in {place} and around {temperature} this {time_period}.',
 		]
 		output_string = random.choice(string_list)
-		res = output_string.format(time_period=time_period, temperature=temp, condition=condition_list[0])
+		res = output_string.format(place=city, time_period=time_period, temperature=temp, condition=condition_list[0])
 	else:
 		res = 'The weather in %s on period from %s till %s will be: %s.' % (city, time_start, time_end, str(degree_list))
 	return res
 
-def weather_response_date_period(city, date_start, date_end, degree_list, condition_list):
+def weather_response_date_period(city, date_start, date_end, degree_list, condition_list, condition_original):
 	if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
-		res = 'On Saturday in %s it will be %s, with temperatures from %s to %s. And Sunday should be %s, with a low of %s and a high of %s.' % (city, condition_list[0], str(degree_list[0][1]) + '°F', str(degree_list[0][2]) + '°F', condition_list[1], str(degree_list[1][1]) + '°F', str(degree_list[1][2]) + '°F')
+		sun_temp_min, sun_temp_max = str(degree_list[0][2]) + '°F', str(degree_list[0][1]) + '°F'
+		sat_temp_min, sat_temp_max = str(degree_list[1][2]) + '°F', str(degree_list[1][1]) + '°F'
+		res = 'On Saturday in {city} it will be {condition_sun}, with temperatures from {sun_temp_min} to {sun_temp_max}. And Sunday should be {condition_sat}, with a low of {sat_temp_min} and a high of {sat_temp_max}.'.format\
+		      (city=city, condition_sun=condition_list[0], sun_temp_min=sun_temp_min, sun_temp_max=sun_temp_max, condition_sat=condition_list[1], sat_temp_min=sat_temp_min, sat_temp_max=sat_temp_max)
 	else:
 		date_start = datetime.strftime(datetime.strptime(date_start, '%Y-%m-%d'), '%B, %d')
 		date_end = datetime.strftime(datetime.strptime(date_end, '%Y-%m-%d'), '%B, %d')
 		degree_list_min = str(sum([i[2] for i in degree_list])/len(degree_list)) + '°F'
 		degree_list_max = str(sum([i[1] for i in degree_list])/len(degree_list)) + '°F'
-		res = 'During period from %s till %s in %s you can expect %s, with a low of %s and a high of %s.' % (date_start, date_end, city, random.choice(condition_list), degree_list_min, degree_list_max)
+		res = 'During period from {date_start} till {date_end} in {city} you can expect {condition}, with a low of {degree_list_min} and a high of {degree_list_max}.'.format\
+		      (date_start=date_start, date_end=date_end, city=city, condition=condition_original, degree_list_min=degree_list_min, degree_list_max=degree_list_max)
 	return res
 
 def weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity):
@@ -212,8 +215,11 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
 
 	return resp
 
-def weather_response_condition(condition_original, condition):
-	resp = 'Chance of %s is %s percent.' % (condition_original, condition)
+def weather_response_condition(condition_original, condition, condition_list=None):
+	if condition_list:
+		resp = 'Chance of %s is %s percent.' % (condition_original, random.choice(condition_list))
+	else:
+		resp = 'Chance of %s is %s percent.' % (condition_original, condition)
 	return resp
 
 def weather_response_outfit(outfit, rain, snow, sun, condition, temp, temp_limit, condition_original):
