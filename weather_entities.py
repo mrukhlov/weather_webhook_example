@@ -1,3 +1,5 @@
+# -*- coding:utf8 -*-
+
 # activity
 winter_activity = [
 	'skiing',

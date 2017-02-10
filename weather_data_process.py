@@ -1,3 +1,5 @@
+# -*- coding:utf8 -*-
+
 from datetime import datetime
 import time as py_time
 from country_codes import codes
@@ -288,10 +290,6 @@ def weather_time_period(parameters, wwo):
                 "description": weather_data_desc
             }
 
-    # if not condition:
-    #     return city, hours[0], hours[1], degree_list
-    # else:
-    #     return city, hours[0], hours[1], degree_list, condition_list
     return city, hours[0], hours[1], degree_list, condition_list, weather_data
 
 def weather_current(parameters, wwo):

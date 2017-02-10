@@ -1,3 +1,5 @@
+# -*- coding:utf8 -*-
+
 from datetime import datetime
 import requests
 
@@ -13,7 +15,6 @@ def wwo_weather_get(parameters, number_of_days=1):
         'num_of_days': number_of_days,
         'mca': 'no',
         'lang': 'en',
-        # 'fx': 'no',
         'cc': 'yes',
         'tp': '1'
     }
