@@ -186,12 +186,12 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 
 def weather_response_date_period(city, date_start, date_end, degree_list, condition_list):
 	if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
-		res = 'On Saturday in %s it will be %s, with temperatures from %s to %s. And Sunday should be %s, with a low of %s and a high of %s.' % (city, condition_list[0], degree_list[0][1], degree_list[0][2], condition_list[1], degree_list[1][1], degree_list[1][2])
+		res = 'On Saturday in %s it will be %s, with temperatures from %s to %s. And Sunday should be %s, with a low of %s and a high of %s.' % (city, condition_list[0], str(degree_list[0][1]) + '°F', str(degree_list[0][2]) + '°F', condition_list[1], str(degree_list[1][1]) + '°F', str(degree_list[1][2]) + '°F')
 	else:
 		date_start = datetime.strftime(datetime.strptime(date_start, '%Y-%m-%d'), '%B, %d')
 		date_end = datetime.strftime(datetime.strptime(date_end, '%Y-%m-%d'), '%B, %d')
-		degree_list_min = sum([i[2] for i in degree_list])/len(degree_list)
-		degree_list_max = sum([i[1] for i in degree_list])/len(degree_list)
+		degree_list_min = str(sum([i[2] for i in degree_list])/len(degree_list)) + '°F'
+		degree_list_max = str(sum([i[1] for i in degree_list])/len(degree_list)) + '°F'
 		res = 'During period from %s till %s in %s you can expect %s, with a low of %s and a high of %s.' % (date_start, date_end, city, random.choice(condition_list), degree_list_min, degree_list_max)
 	return res
 

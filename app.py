@@ -1,8 +1,36 @@
-#-*-encoding:utf8-*-
+# -*-encoding:utf8-*-
 
 import os
-from wwo_api import wwo_weather_get
 
+from flask import (
+    Flask,
+    request,
+    make_response,
+    jsonify
+)
+
+from weather_data_process import (
+    weather_current,
+    weather_date,
+    weather_time,
+    weather_date_period,
+    weather_time_period,
+    date_time_format
+)
+from weather_entities import (
+    winter_activity,
+    summer_activity,
+    demi_activity,
+    condition_dict,
+    unsupported,
+    cold_weather,
+    warm_weather,
+    hot_weather,
+    unknown_weather,
+    rain,
+    snow,
+    sun
+)
 from weather_response import (
     weather_response_current,
     weather_response_date,
@@ -15,39 +43,7 @@ from weather_response import (
     weather_response_outfit,
     weather_response_temperature
 )
-
-from weather_data_process import (
-    weather_current,
-    weather_date,
-    weather_time,
-    weather_date_period,
-    weather_time_period,
-    address_getter,
-    date_time_format
-)
-
-from weather_entities import (
-    winter_activity,
-    summer_activity,
-    demi_activity,
-    condition_dict,
-    supported,
-    unsupported,
-    cold_weather,
-    warm_weather,
-    hot_weather,
-    unknown_weather,
-    rain,
-    snow,
-    sun
-)
-
-from flask import (
-    Flask,
-    request,
-    make_response,
-    jsonify
-)
+from wwo_api import wwo_weather_get
 
 app = Flask(__name__)
 log = app.logger
@@ -55,6 +51,7 @@ log = app.logger
 apikey = '7UmuyhWz6qteGNoQRusNzXA9M0Ccwlf8'
 
 unit_global = 'F'
+
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -79,8 +76,8 @@ def webhook():
 
     return make_response(jsonify(res))
 
-def weather(req):
 
+def weather(req):
     # parameters = address_getter(req['result']['parameters'])
     parameters = req['result']['parameters']
     address = parameters.get('address')
@@ -118,14 +115,19 @@ def weather(req):
                     else:
                         resp = weather_response_date_time(city, date, time, temp, unit, desc)
                 elif date:
-                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = weather_date(parameters, wwo)
+                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = \
+                        weather_date(parameters, wwo)
                     resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
                 elif date_period:
-                    city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
-                    resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
+                    city, date_start, date_end, degree_list, condition_list, weather_data = \
+                        weather_date_period(parameters, wwo)
+                    resp = weather_response_date_period(
+                        city, date_start, date_end, degree_list, condition_list)
                 elif time_period:
-                    city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
-                    resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
+                    city, time_start, time_end, degree_list, condition_list, weather_data = \
+                        weather_time_period(parameters, wwo)
+                    resp = weather_response_time_period(
+                        city, time_start, time_end, degree_list, condition_list)
             else:
                 '''else we just return current conditions'''
                 city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
@@ -136,8 +138,8 @@ def weather(req):
         resp = 'Please specify city.'
     return {"speech": resp, "displayText": resp}
 
-def weather_activity(req):
 
+def weather_activity(req):
     # parameters = address_getter(req['result']['parameters'])
     parameters = req['result']['parameters']
     address = parameters.get('address')
@@ -175,30 +177,38 @@ def weather_activity(req):
                     else:
                         weather_resp = weather_response_date_time(city, date, time, temp, unit, desc)
                 elif date:
-                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
+                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = \
+                        weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(
+                        city, date, temp, unit, min_temp, max_temp, desc)
                 elif date_period:
-                    city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list])/len(degree_list)
-                elif time_period:
-                    city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
+                    city, date_start, date_end, degree_list, condition_list, weather_data = \
+                        weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(
+                        city, date_start, date_end, degree_list, condition_list)
                     temp = sum([i[0] for i in degree_list]) / len(degree_list)
-                resp = str(weather_resp) + ' ' + str(weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity))
+                elif time_period:
+                    city, time_start, time_end, degree_list, condition_list, weather_data = \
+                        weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(
+                        city, time_start, time_end, degree_list, condition_list)
+                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity))
             else:
                 '''else we just return current conditions'''
                 city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
                 weather_resp = weather_response_current(city, temp, desc, unit)
-                resp = str(weather_resp) + ' ' + str(weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity))
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity))
         else:
             resp = error
     else:
         resp = 'Please specify location.'
     return {"speech": resp, "displayText": resp}
 
-def weather_condition(req):
 
+def weather_condition(req):
     # parameters = address_getter(req['result']['parameters'])
     parameters = req['result']['parameters']
     address = parameters.get('address')
@@ -244,28 +254,35 @@ def weather_condition(req):
                     else:
                         weather_resp = weather_response_date_time(city, date, time, temp, unit, desc)
                 if date:
-                    city, date, temp, unit, min_temp, max_temp, condition, weather_data = weather_date(parameters, wwo)
+                    city, date, temp, unit, min_temp, max_temp, condition, weather_data, desc = \
+                        weather_date(parameters, wwo)
                     weather_resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
                 elif date_period:
-                    city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
+                    city, date_start, date_end, degree_list, condition_list, weather_data = \
+                        weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(
+                        city, date_start, date_end, degree_list, condition_list)
                 elif time_period:
-                    city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
-                resp = str(weather_resp) + str(weather_response_condition(condition_original, condition))
+                    city, time_start, time_end, degree_list, condition_list, weather_data = \
+                        weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(
+                        city, time_start, time_end, degree_list, condition_list)
+                resp = str(weather_resp) + str(
+                    weather_response_condition(condition_original, condition))
             else:
                 '''else we just return current conditions'''
                 city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
                 weather_resp = weather_response_current(city, temp, desc, unit)
-                resp = str(weather_resp) + ' ' + str(weather_response_condition(condition_original, condition))
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_condition(condition_original, condition))
         else:
             resp = error
     else:
         resp = 'Please specify location.'
     return {"speech": resp, "displayText": resp}
 
-def weather_outfit(req):
 
+def weather_outfit(req):
     # parameters = address_getter(req['result']['parameters'])
     parameters = req['result']['parameters']
     address = parameters.get('address')
@@ -323,7 +340,8 @@ def weather_outfit(req):
 
                 if time or date_and_time:
                     if outfit in rain or outfit in snow or outfit in sun:
-                        city, date, time, temp, unit, desc, condition, weather_data = weather_time(parameters, wwo)
+                        city, date, time, temp, unit, desc, condition, weather_data = \
+                            weather_time(parameters, wwo)
                     else:
                         city, date, time, temp, unit, desc, weather_data = weather_time(parameters, wwo)
 
@@ -332,37 +350,48 @@ def weather_outfit(req):
                     else:
                         weather_resp = weather_response_date_time(city, date, time, temp, unit, desc)
                 elif date:
-                    # city, date, temp, unit, min_temp, max_temp, condition, weather_data, desc = weather_date(parameters, wwo)
                     if outfit in rain or outfit in snow or outfit in sun:
-                        city, date, temp, unit, min_temp, max_temp, condition, weather_data, desc = weather_date(parameters, wwo)
+                        city, date, temp, unit, min_temp, max_temp, condition, weather_data, desc = \
+                            weather_date(parameters, wwo)
                     else:
-                        city, date, temp, unit, min_temp, max_temp, weather_data, desc = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
+                        city, date, temp, unit, min_temp, max_temp, weather_data, desc = \
+                            weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(
+                        city, date, temp, unit, min_temp, max_temp, desc)
                 elif date_period:
-                    city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list])/len(degree_list)
-                elif time_period:
-                    city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
+                    city, date_start, date_end, degree_list, condition_list, weather_data = \
+                        weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(
+                        city, date_start, date_end, degree_list, condition_list)
                     temp = sum([i[0] for i in degree_list]) / len(degree_list)
-                resp = str(weather_resp) + ' ' + str(weather_response_outfit(outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
+                elif time_period:
+                    city, time_start, time_end, degree_list, condition_list, weather_data = \
+                        weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(
+                        city, time_start, time_end, degree_list, condition_list)
+                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_outfit(
+                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
             else:
                 '''else we just return current conditions'''
                 if condition:
-                    city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
+                    city, temp, desc, condition, unit, weather_data = \
+                        weather_current(parameters, wwo)
                 else:
                     city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
                 weather_resp = weather_response_current(city, temp, desc, unit)
-                resp = str(weather_resp) + ' ' + str(weather_response_outfit(outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
+                resp = str(weather_resp) + ' ' + str(
+                    weather_response_outfit(
+                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
         else:
             resp = error
     else:
         resp = 'Please specify city.'
     return {"speech": resp, "displayText": resp}
 
-def weather_temperature(req):
 
+def weather_temperature(req):
     # parameters = address_getter(req['result']['parameters'])
     parameters = req['result']['parameters']
     address = parameters.get('address')
@@ -411,31 +440,41 @@ def weather_temperature(req):
                     else:
                         weather_resp = weather_response_date_time(city, date, time, temp, unit, desc)
                 elif date:
-                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
+                    city, date, temp, unit, min_temp, max_temp, weather_data, desc = \
+                        weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(
+                        city, date, temp, unit, min_temp, max_temp, desc)
                 elif date_period:
-                    city, date_start, date_end, degree_list, condition_list, weather_data = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(city, date_start, date_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list])/len(degree_list)
-                elif time_period:
-                    city, time_start, time_end, degree_list, condition_list, weather_data = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(city, time_start, time_end, degree_list, condition_list)
+                    city, date_start, date_end, degree_list, condition_list, weather_data = \
+                        weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(
+                        city, date_start, date_end, degree_list, condition_list)
                     temp = sum([i[0] for i in degree_list]) / len(degree_list)
-                resp = str(weather_resp) + ' ' + str(weather_response_temperature(temperature, temp_limit, temp))
+                elif time_period:
+                    city, time_start, time_end, degree_list, condition_list, weather_data = \
+                        weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(
+                        city, time_start, time_end, degree_list, condition_list)
+                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                resp = str(weather_resp) + ' ' + str(weather_response_temperature(
+                    temperature, temp_limit, temp))
             else:
                 '''else we just return current conditions'''
                 city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
                 weather_resp = weather_response_current(city, temp, desc, unit)
-                resp = str(weather_resp) + ' ' + str(weather_response_temperature(temperature, temp_limit, temp))
+                resp = str(weather_resp) + ' ' + str(weather_response_temperature(
+                    temperature, temp_limit, temp))
         else:
             resp = error
     else:
         resp = 'Please specify city.'
     return {"speech": resp, "displayText": resp}
 
+
 @app.route('/test', methods=['GET'])
 def test():
     return 'weather agent'
+
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
