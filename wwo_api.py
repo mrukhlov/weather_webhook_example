@@ -1,5 +1,5 @@
+from datetime import datetime
 import requests
-from datetime import datetime, timedelta
 
 def wwo_weather_get(parameters, number_of_days=1):
 
@@ -30,9 +30,7 @@ def wwo_weather_get(parameters, number_of_days=1):
         date_period = date_time.get('date-period')
         if date_period:
             dates = date_period.split('/')
-            params_day = datetime.strptime(dates[0], '%Y-%m-%d')
             today = datetime.today()
-            diff_start = (params_day - today).days
             params_day = datetime.strptime(dates[1], '%Y-%m-%d')
             diff_end = (params_day - today).days
             if diff_end > 13:
@@ -48,24 +46,28 @@ def wwo_weather_get(parameters, number_of_days=1):
         date_and_time = date_time.get('date-and-time')
 
         if date_and_time:
-            date = datetime.strftime(datetime.strptime(date_and_time, '%Y-%m-%dT%H:%M:%SZ'), '%Y-%m-%d')
+            date = datetime.strftime(
+                datetime.strptime(date_and_time, '%Y-%m-%dT%H:%M:%SZ'),
+                '%Y-%m-%d'
+            )
             wwo_data['fx'] = 'yes'
             wwo_data['date'] = date
             wwo_data['cc'] = 'no'
         if date:
             wwo_data['fx'] = 'yes'
             wwo_data['date'] = date
-            # wwo_data['cc'] = 'no'
         if time:
             wwo_data['fx'] = 'yes'
-            # wwo_data['cc'] = 'no'
     else:
         wwo_data['tp'] = '1'
 
-    r = requests.get('http://api.worldweatheronline.com/premium/v1/weather.ashx', params=wwo_data)
+    request = requests.get(
+        'http://api.worldweatheronline.com/premium/v1/weather.ashx',
+        params=wwo_data
+    )
 
     try:
-        json_data = r.json()['data']
+        json_data = request.json()['data']
         error = json_data.get('error')
         if error:
             json_data = {'error':error[0]['msg']}

@@ -13,22 +13,22 @@ def address_getter(parameters):
         if country and country == 'Russian Federation': country = 'Russia'
         if not city:
             send_url = 'http://ipinfo.io'
-            r = requests.get(send_url)
-            if codes[r.json().get('country')] == country:
-                city = r.json().get('city')
+            request = requests.get(send_url)
+            if codes[request.json().get('country')] == country:
+                city = request.json().get('city')
                 if city:
                     parameters['address']['city'] = city
     else:
         parameters['address'] = {}
         send_url = 'http://ipinfo.io'
-        r = requests.get(send_url)
-        city = r.json().get('city')
-        country = codes[r.json().get('country')]
+        request = requests.get(send_url)
+        city = request.json().get('city')
+        country = codes[request.json().get('country')]
         if city:
             parameters['address']['city'] = city
         if country:
             parameters['address']['country'] = country
-            parameters['address']['country_code'] = r.json().get('country')
+            parameters['address']['country_code'] = request.json().get('country')
 
     return parameters
 
@@ -180,8 +180,10 @@ def weather_date_period(parameters, wwo):
     dates = date_period.split('/')
     weather = wwo['weather']
     for date in weather:
-        if datetime.strptime(date['date'], '%Y-%m-%d') >= datetime.strptime(dates[0], '%Y-%m-%d') or datetime.strptime(date['date'], '%Y-%m-%d') <= datetime.strptime(dates[1], '%Y-%m-%d'):
-            # if condition:
+        if datetime.strptime(date['date'], '%Y-%m-%d') >= \
+                datetime.strptime(dates[0], '%Y-%m-%d') or \
+                        datetime.strptime(date['date'], '%Y-%m-%d') <= \
+                        datetime.strptime(dates[1], '%Y-%m-%d'):
             for hour_data in date['hourly']:
                 if hour_data['time'] == '1200':
                     if condition:
@@ -195,11 +197,17 @@ def weather_date_period(parameters, wwo):
             weather_data_tempC = (int(date['maxtempC']) + int(date['mintempC'])) / 2
             weather_data_tempF = (int(date['maxtempF']) + int(date['mintempF'])) / 2
             if unit and unit == 'C':
-                degree_list.append([weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])])
+                degree_list.append(
+                    [weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])]
+                )
             elif unit and unit == 'F':
-                degree_list.append([weather_data_tempF, int(date['maxtempF']), int(date['mintempF'])])
+                degree_list.append(
+                    [weather_data_tempF, int(date['maxtempF']), int(date['mintempF'])]
+                )
             else:
-                degree_list.append([weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])])
+                degree_list.append(
+                    [weather_data_tempC, int(date['maxtempC']), int(date['mintempC'])]
+                )
 
             weather_data[date['date']] = {
                 'weather': {
@@ -216,10 +224,6 @@ def weather_date_period(parameters, wwo):
                 "description": weather_data_desc
             }
 
-    # if not condition:
-    #     return city, dates[0], dates[1], degree_list
-    # else:
-    #     return city, dates[0], dates[1], degree_list, condition_list
     return city, dates[0], dates[1], degree_list, condition_list, weather_data
 
 def weather_time_period(parameters, wwo):
