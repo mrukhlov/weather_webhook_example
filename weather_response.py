@@ -109,7 +109,7 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 			'{day} in {place} it will be around {temperature} and {condition}.',
 			'{day} in {place} you can expect it to be around {temperature} and {condition}.',
 			'{day} in {place} you can expect {condition}, with temperatures around {temperature}.',
-			'{day} in {place} will be {condition}, and temperatures will range from {temperature}.',
+			'{day} in {place} will be {condition}, and temperatures will around from {temperature}.',
 		]
 		output_string = random.choice(string_list)
 		res = output_string.format(place=city, day=day, temperature=temp, condition=desc.lower())
