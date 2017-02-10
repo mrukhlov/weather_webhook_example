@@ -194,6 +194,8 @@ def weather_response_date_period(city, date_start, date_end, degree_list, condit
 		date_end = datetime.strftime(datetime.strptime(date_end, '%Y-%m-%d'), '%B, %d')
 		degree_list_min = str(sum([i[2] for i in degree_list])/len(degree_list)) + '°F'
 		degree_list_max = str(sum([i[1] for i in degree_list])/len(degree_list)) + '°F'
+		if not condition_original:
+			condition_original = random.choice(condition_list)
 		res = 'During period from {date_start} till {date_end} in {city} you can expect {condition}, with a low of {degree_list_min} and a high of {degree_list_max}.'.format\
 		      (date_start=date_start, date_end=date_end, city=city, condition=condition_original, degree_list_min=degree_list_min, degree_list_max=degree_list_max)
 	return res
