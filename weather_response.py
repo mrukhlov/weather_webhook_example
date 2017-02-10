@@ -55,7 +55,7 @@ def weather_response_time(city, date, time, temp, unit, desc):
 	string_list = [
 		'Today in {place} at {time} it will be around {temperature} and {condition}.',
 		'Today in {place} at {time} you can expect it to be around {temperature} and {condition}.',
-		'Today in {place} at {time} you can expect {condition}, with temperatures around {temperature}.',
+		'Today in {place} at {time} you can expect {condition}, with the temperature around {temperature}.',
 		'Today in {place} at {time} will be {condition}, and temperatures will range from {temperature}.',
 	]
 	output_string = random.choice(string_list)
