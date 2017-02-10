@@ -46,8 +46,25 @@ from weather_response import (
 from wwo_api import wwo_weather_get
 
 apikey = '7UmuyhWz6qteGNoQRusNzXA9M0Ccwlf8'
-
 _DEFAULT_TEMP_UNIT = 'F'
+
+class WeatherResult(object):
+    city = None
+    date = None
+    time = None
+    temp = None
+    unit = None
+    desc = None
+    weather_data = None
+    min_temp = None
+    max_temp = None
+    date_start = None
+    date_end = None
+    degree_list = None
+    condition_list = None
+    time_start = None
+    time_end = None
+    condition = None
 
 app = Flask(__name__)
 log = app.logger
