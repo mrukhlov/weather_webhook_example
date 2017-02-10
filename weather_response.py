@@ -88,7 +88,7 @@ def weather_response_date_time(city, date, time, temp, unit, desc):
 	string_list = [
 		'{day} in {place} at {time} it will be around {temperature} and {condition}.',
 		'{day} in {place} at {time} you can expect it to be around {temperature} and {condition}.',
-		'{day} in {place} at {time} you can expect {condition}, with temperatures around {temperature}.',
+		'{day} in {place} at {time} you can expect {condition}, with the temperatures around {temperature}.',
 		'{day} in {place} at {time} will be {condition}, and temperatures will range from {temperature}.',
 		'At {time} on {day} in {place} it will be {temperature} and {condition}.'
 	]
