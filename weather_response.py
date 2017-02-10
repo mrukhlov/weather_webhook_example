@@ -152,7 +152,7 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
                 ]
                 output_string = random.choice(string_list)
                 res = output_string.format(
-                    date=weekday_str, place=city, condition=desc.lower(), temperature=temp
+                    date=weekday_str.capitalize(), place=city, condition=desc.lower(), temperature=temp
                 )
         else:
             date = datetime.strftime(datetime.strptime(date, '%Y-%m-%d'), '%B, %d')

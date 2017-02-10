@@ -150,6 +150,9 @@ def weather_activity(req):
         parameters = date_time_format(parameters)
     date_time = parameters.get('date-time')
     activity = parameters.get('activity')
+    if activity not in summer_activity and activity not in winter_activity:
+        resp = 'Unknown activity.'
+        return {"speech": resp, "displayText": resp}
     unit = parameters.get('unit')
     if not unit:
         if len(unit_global) > 0:

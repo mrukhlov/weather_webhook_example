@@ -18,6 +18,7 @@ summer_activity = [
 	'elephant safari',
 	'kayaking',
 	'mountain biking',
+	'surfing',
 ]
 
 demi_activity = [
