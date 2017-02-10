@@ -3,7 +3,7 @@ import time as py_time
 from country_codes import codes
 import requests
 
-def adress_getter(parameters):
+def address_getter(parameters):
 
 	address = parameters.get('address')
 
@@ -32,7 +32,7 @@ def adress_getter(parameters):
 
 	return parameters
 
-def date_time_proc(parameters):
+def date_time_format(parameters):
 	date_time_date = parameters['date-time']
 	if date_time_date.find('/') > -1:
 		if date_time_date.find(':') > -1:

@@ -22,8 +22,24 @@ from weather_data_process import (
 	weather_time,
 	weather_date_period,
 	weather_time_period,
-	adress_getter,
-	date_time_proc
+	address_getter,
+	date_time_format
+)
+
+from weather_entities import (
+	winter_activity,
+	summer_activity,
+	demi_activity,
+	condition_dict,
+	supported,
+	unsupported,
+	cold_weather,
+	warm_weather,
+	hot_weather,
+	unknown_weather,
+	rain,
+	snow,
+	sun
 )
 
 from flask import (
@@ -65,13 +81,14 @@ def webhook():
 
 def weather(req):
 
-	# parameters = adress_getter(req['result']['parameters'])
+	# parameters = address_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	city = None
 	if address:
 		city = address.get('city')
 	if parameters.get('date-time'):
-		parameters = date_time_proc(parameters)
+		parameters = date_time_format(parameters)
 	date_time = parameters.get('date-time')
 	unit = parameters.get('unit')
 	if not unit:
@@ -115,24 +132,20 @@ def weather(req):
 				resp = weather_response_current(city, temp, desc, unit)
 		else:
 			resp = error
-
-		return {"speech": resp, "displayText": resp}
 	else:
-		return 'Please specify city.'
+		resp = 'Please specify city.'
+	return {"speech": resp, "displayText": resp}
 
 def weather_activity(req):
 
-	winter_activity = ['skiing', 'snowboarding', 'snowball fighting']
-	summer_activity = ['cycling', 'run', 'swimming', 'jogging', 'hiking', 'skating', 'parasailing', 'widsurfing', 'mushroom hunting', 'elephant safari', 'kayaking', 'mountain biking']
-	demi_activity = ['sightseeing', 'birdwatching', 'tree climbing']
-
-	# parameters = adress_getter(req['result']['parameters'])
+	# parameters = address_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	city = None
 	if address:
 		city = address.get('city')
 	if parameters.get('date-time'):
-		parameters = date_time_proc(parameters)
+		parameters = date_time_format(parameters)
 	date_time = parameters.get('date-time')
 	activity = parameters.get('activity')
 	unit = parameters.get('unit')
@@ -180,22 +193,20 @@ def weather_activity(req):
 				resp = str(weather_resp) + ' ' + str(weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity))
 		else:
 			resp = error
-
-		return {"speech": resp, "displayText": resp}
 	else:
-		return 'Please specify location.'
+		resp = 'Please specify location.'
+	return {"speech": resp, "displayText": resp}
 
 def weather_condition(req):
-	supported = ['rain', 'snow', 'wind', 'sun', 'fog', 'thunder', 'overcast', 'clouds', 'foggy']
-	unsupported = ['shower', 'ice', 'freezing rain', 'rain snow', 'haze', 'smoke']
 
-	# parameters = adress_getter(req['result']['parameters'])
+	# parameters = address_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	city = None
 	if address:
 		city = address.get('city')
 	if parameters.get('date-time'):
-		parameters = date_time_proc(parameters)
+		parameters = date_time_format(parameters)
 	date_time = parameters.get('date-time')
 	condition = parameters.get('condition')
 	unit = parameters.get('unit')
@@ -205,26 +216,12 @@ def weather_condition(req):
 
 	if condition in unsupported:
 		error = 'Unsupported condition'
-		return error
+		return {"speech": error, "displayText": error}
 	else:
 		parameters['condition_original'] = condition
-		if condition == 'rain':
-			parameters['condition'] = "chanceofrain"
-		elif condition == 'snow':
-			parameters['condition'] = "chanceofsnow"
-		elif condition == 'wind':
-			parameters['condition'] = "chanceofwindy"
-		elif condition == 'sun':
-			parameters['condition'] = "chanceofsunshine"
-		elif condition == 'fog' or condition == 'foggy':
-			parameters['condition'] = "chanceoffog"
-		elif condition == 'thunder':
-			parameters['condition'] = "chanceofthunder"
-		elif condition == 'overcast':
-			parameters['condition'] = "chanceofovercast"
-		elif condition == 'clouds':
-			parameters['condition'] = "cloudcover"
+		parameters['condition'] = condition_dict[condition]
 		condition_original = parameters['condition_original']
+
 	if city:
 
 		wwo = wwo_weather_get(parameters)
@@ -263,29 +260,20 @@ def weather_condition(req):
 				resp = str(weather_resp) + ' ' + str(weather_response_condition(condition_original, condition))
 		else:
 			resp = error
-
-		return {"speech": resp, "displayText": resp}
 	else:
-		return 'Please specify location.'
+		resp =  'Please specify location.'
+	return {"speech": resp, "displayText": resp}
 
 def weather_outfit(req):
 
-	cold_weather = ['wool socks', 'wool cap', 'turtleneck', 'thermal pants', 'sweatshirt', 'sweatpants', 'sweater', 'snowboard pants', 'ski pants', 'shawls', 'scarf','jumper','balaclava', 'beanie', 'boots', 'cardigan', 'fleece top', 'gloves']
-	warm_weather = ['umbrella', 'tennis shoes', 'lounge wear', 'socks', 'sneakers', 'sleeve shirt', 'rain pants','rain jacket','rain coat','pants','khakis','jeans', 'jacket', 'casual shirt', 'coat', 'dress pants', 'dress shirt', 'dress', 'gum boots', 'hat', 'hoodie']
-	hot_weather = ['tank top', 't-shirt', 'swimwear', 'swim goggles', 'sunscreen', 'sunglasses', 'skirt', 'shorts', 'bathing suit', 'bra', 'capri', 'flips flops', 'pool shoes', 'sandals']
-	unknown = ['underwear', 'tie', 'neck gaiter', 'pajama', 'sleepwear', 'slippers', 'suit']
-
-	rain = ['umbrella', 'coat', 'gum boots', 'beanie', 'hat', 'jacket', 'rain coat', 'rain jacket', 'rain pants']
-	snow = ['gloves', 'fleece top', 'ski pants', 'snowboard pants']
-	sun = ['swimwear', 'swim goggles', 'bra', 'bathing suit', 'flips flops', 'sandals', 'sunglasses', 'sunscreen']
-
-	# parameters = adress_getter(req['result']['parameters'])
+	# parameters = address_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	city = None
 	if address:
 		city = address.get('city')
 	if parameters.get('date-time'):
-		parameters = date_time_proc(parameters)
+		parameters = date_time_format(parameters)
 	date_time = parameters.get('date-time')
 	outfit = parameters.get('outfit')
 
@@ -295,12 +283,12 @@ def weather_outfit(req):
 			parameters['unit'] = unit_global
 
 	if outfit:
-		if outfit in cold_weather or outfit in warm_weather or outfit in hot_weather:
+		if outfit in cold_weather or outfit in warm_weather or outfit in hot_weather or outfit in unknown_weather:
 			if outfit in cold_weather:
 				temp_limit = -5
 			if outfit in warm_weather:
 				temp_limit = 10
-			if outfit in hot_weather:
+			if outfit in hot_weather or outfit in unknown_weather:
 				temp_limit = 20
 		if outfit in rain or outfit in snow or outfit in sun:
 			if outfit in rain:
@@ -369,20 +357,20 @@ def weather_outfit(req):
 				resp = str(weather_resp) + ' ' + str(weather_response_outfit(outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
 		else:
 			resp = error
-
-		return {"speech": resp, "displayText": resp}
 	else:
-		return 'Please specify city.'
+		resp = 'Please specify city.'
+	return {"speech": resp, "displayText": resp}
 
 def weather_temperature(req):
 
-	# parameters = adress_getter(req['result']['parameters'])
+	# parameters = address_getter(req['result']['parameters'])
 	parameters = req['result']['parameters']
 	address = parameters.get('address')
+	city = None
 	if address:
 		city = address.get('city')
 	if parameters.get('date-time'):
-		parameters = date_time_proc(parameters)
+		parameters = date_time_format(parameters)
 	date_time = parameters.get('date-time')
 	temperature = parameters['temperature']
 
@@ -441,10 +429,9 @@ def weather_temperature(req):
 				resp = str(weather_resp) + ' ' + str(weather_response_temperature(temperature, temp_limit, temp))
 		else:
 			resp = error
-		print unit_global
-		return {"speech": resp, "displayText": resp}
 	else:
-		return 'Please specify city.'
+		resp = 'Please specify city.'
+	return {"speech": resp, "displayText": resp}
 
 @app.route('/test', methods=['GET'])
 def test():
