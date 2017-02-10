@@ -141,7 +141,7 @@ def weather_response_date(city, date, temp, unit, min_temp, max_temp, desc):
 					'On {date} in {place} it will be {condition}, {temperature}.',
 					'On {date} in {place} it\'s expected to be {condition}, {temperature}.',
 					'The forecast for {date} in {place} is {condition}, {temperature}.',
-					'{date in {place}} is expected to be {condition}, {temperature}.'
+					'{date} in {place} is expected to be {condition}, {temperature}.'
 				]
 				output_string = random.choice(string_list)
 				res = output_string.format(date=weekday_str, place=city, condition=desc.lower(), temperature=temp)

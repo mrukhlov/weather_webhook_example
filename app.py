@@ -357,7 +357,8 @@ def weather_outfit(req):
                         city, date, temp, unit, min_temp, max_temp, weather_data, desc = \
                             weather_date(parameters, wwo)
                     weather_resp = weather_response_date(
-                        city, date, temp, unit, min_temp, max_temp, desc)
+                        city, date, temp, unit, min_temp, max_temp, desc
+                    )
                 elif date_period:
                     city, date_start, date_end, degree_list, condition_list, weather_data = \
                         weather_date_period(parameters, wwo)
