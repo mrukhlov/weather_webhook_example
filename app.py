@@ -463,7 +463,8 @@ def weather_temperature(req):
                 city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
                 weather_resp = weather_response_current(city, temp, desc, unit)
                 resp = str(weather_resp) + ' ' + str(weather_response_temperature(
-                    temperature, temp_limit, temp))
+                    temperature, temp_limit, temp
+                ))
         else:
             resp = error
     else:
