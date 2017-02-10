@@ -183,7 +183,7 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 		res = 'The weather in %s on period from %s till %s will be: %s.' % (city, time_start, time_end, str(degree_list))
 	return res
 
-def weather_response_date_period(city, date_start, date_end, degree_list, condition_list, condition_original):
+def weather_response_date_period(city, date_start, date_end, degree_list, condition_list, condition_original=None):
 	if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
 		sun_temp_min, sun_temp_max = str(degree_list[0][2]) + '°F', str(degree_list[0][1]) + '°F'
 		sat_temp_min, sat_temp_max = str(degree_list[1][2]) + '°F', str(degree_list[1][1]) + '°F'
