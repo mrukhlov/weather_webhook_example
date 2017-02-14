@@ -193,7 +193,7 @@ def weather_date_period(parameters, wwo):
             for hour_data in date['hourly']:
                 if hour_data['time'] == '1200':
                     if condition:
-                        condition_list.append(hour_data[condition])
+                        condition_list.append([hour_data['weatherDesc'][0]["value"].lower(), hour_data[condition]])
                     else:
                         condition_list.append(hour_data['weatherDesc'][0]["value"].lower())
 

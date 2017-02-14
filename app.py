@@ -536,7 +536,7 @@ def weather_outfit(req):
                     temp = sum([i[0] for i in degree_list]) / len(degree_list)
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_outfit(
-                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
+                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original, condition_list))
             else:
                 
                 if condition:

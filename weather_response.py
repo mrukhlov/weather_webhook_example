@@ -205,6 +205,7 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 def weather_response_date_period(
         city, date_start, date_end, degree_list, condition_list, condition_original=None
 ):
+    print condition_list
     if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and \
                     datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
         sun_temp_min, sun_temp_max = str(degree_list[0][2]) + '°F', str(degree_list[0][1]) + '°F'
@@ -215,10 +216,10 @@ def weather_response_date_period(
               'with a low of {sat_temp_min} and a high of {sat_temp_max}.'.format \
                 (
                     city=city,
-                    condition_sun=condition_list[0],
+                    condition_sun=condition_list[0][0],
                     sun_temp_min=sun_temp_min,
                     sun_temp_max=sun_temp_max,
-                    condition_sat=condition_list[1],
+                    condition_sat=condition_list[1][0],
                     sat_temp_min=sat_temp_min,
                     sat_temp_max=sat_temp_max
                 )
@@ -261,18 +262,19 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
 
 def weather_response_condition(condition_original, condition, condition_list=None):
     if condition_list:
-        resp = 'Chance of %s is %s percent.' % (condition_original, random.choice(condition_list))
-    else:
-        resp = 'Chance of %s is %s percent.' % (condition_original, condition)
+        condition = random.choice(condition_list)
+    resp = 'Chance of %s is %s percent.' % (condition_original, condition)
     return resp
 
 
 def weather_response_outfit(
-        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original
+        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original, condition_list=None
 ):
     if outfit in rain or outfit in snow or outfit in sun:
         string_list = _STRING_LIST_YES if condition > 50 else _STRING_LIST_NO
         answer = random.choice(string_list)
+        if condition_list:
+            condition = random.choice(condition_list[1])
         resp = 'Chance of %s is %s percent. %s' % (condition_original, condition, answer)
     else:
         if temp_limit >= 0 or temp_limit >= 32:
