@@ -264,7 +264,7 @@ def weather_activity(req):
                     ) = weather_time_period(parameters, wwo)
                     weather_resp = weather_response_time_period(
                         city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_activity(
                         activity, temp, winter_activity, summer_activity, demi_activity
@@ -534,7 +534,7 @@ def weather_outfit(req):
                     ) = weather_time_period(parameters, wwo)
                     weather_resp = weather_response_time_period(
                         city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_outfit(
                         outfit, rain, snow, sun, condition, temp, temp_limit, condition_original, condition_list))
@@ -642,7 +642,7 @@ def weather_temperature(req):
                     ) = weather_time_period(parameters, wwo)
                     weather_resp = weather_response_time_period(
                         city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
                 resp = str(weather_resp) + ' ' + str(weather_response_temperature(
                     temperature, temp_limit, temp))
             else:
