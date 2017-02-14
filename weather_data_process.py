@@ -36,18 +36,21 @@ def address_getter(parameters):
 
 def date_time_format(parameters):
     date_time_date = parameters['date-time']
-    if date_time_date.find('/') > -1:
-        if date_time_date.find(':') > -1:
-            parameters['date-time'] = {'time-period':date_time_date}
-        elif date_time_date.find('-') > -1:
-            parameters['date-time'] = {'date-period':date_time_date}
-    else:
-        if date_time_date.find('T') > -1:
-            parameters['date-time'] = {'date-and-time':date_time_date}
-        elif date_time_date.find(':') > -1:
-            parameters['date-time'] = {'time':date_time_date}
-        elif date_time_date.find('-') > -1:
-            parameters['date-time'] = {'date':date_time_date}
+    try:
+        if date_time_date.find('/') > -1:
+            if date_time_date.find(':') > -1:
+                parameters['date-time'] = {'time-period':date_time_date}
+            elif date_time_date.find('-') > -1:
+                parameters['date-time'] = {'date-period':date_time_date}
+        else:
+            if date_time_date.find('T') > -1:
+                parameters['date-time'] = {'date-and-time':date_time_date}
+            elif date_time_date.find(':') > -1:
+                parameters['date-time'] = {'time':date_time_date}
+            elif date_time_date.find('-') > -1:
+                parameters['date-time'] = {'date':date_time_date}
+    except AttributeError:
+        parameters['error'] = 'Platform error.'
     return parameters
 
 def weather_date(parameters, wwo):
