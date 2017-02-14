@@ -307,6 +307,7 @@ def weather_condition(req):
         return {"speech": error, "displayText": error}
     else:
         parameters['condition_original'] = condition
+        print condition
         parameters['condition'] = condition_dict[condition]
         condition_original = parameters['condition_original']
 

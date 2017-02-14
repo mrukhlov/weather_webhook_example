@@ -38,7 +38,7 @@ condition_dict = {
 	'sun': 'chanceofsunshine',
 	'fog': 'chanceoffog',
 	'foggy': 'chanceoffog',
-	'thunder': 'chanceofthunder',
+	'thunderstorm': 'chanceofthunder',
 	'overcast': 'chanceofovercast',
 	'clouds': 'cloudcover',
 }
@@ -49,7 +49,7 @@ supported = [
 	'wind',
 	'sun',
 	'fog',
-	'thunder',
+	'thunderstorm',
 	'overcast',
 	'clouds',
 	'foggy',
