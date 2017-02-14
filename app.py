@@ -109,6 +109,9 @@ def weather(req):
         city = address.get('city')
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
+        error = parameters.get('error')
+        if error:
+            return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     unit = parameters.get('unit')
     if not unit:
@@ -189,6 +192,9 @@ def weather_activity(req):
         city = address.get('city')
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
+        error = parameters.get('error')
+        if error:
+            return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     activity = parameters.get('activity')
     if activity not in summer_activity and activity not in winter_activity:
@@ -286,6 +292,9 @@ def weather_condition(req):
         city = address.get('city')
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
+        error = parameters.get('error')
+        if error:
+            return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     condition = parameters.get('condition')
     unit = parameters.get('unit')
@@ -393,6 +402,9 @@ def weather_outfit(req):
         city = address.get('city')
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
+        error = parameters.get('error')
+        if error:
+            return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     outfit = parameters.get('outfit')
 
@@ -557,6 +569,9 @@ def weather_temperature(req):
         city = address.get('city')
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
+        error = parameters.get('error')
+        if error:
+            return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     temperature = parameters['temperature']
 

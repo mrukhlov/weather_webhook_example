@@ -51,7 +51,7 @@ def date_time_format(parameters):
                 parameters['date-time'] = {'date':date_time_date}
     except AttributeError:
         parameters.pop('date-time', None)
-        parameters['error'] = 'Platform error.'
+        parameters['error'] = 'Platform date-time error.'
     return parameters
 
 def weather_date(parameters, wwo):
