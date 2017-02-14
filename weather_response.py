@@ -286,19 +286,20 @@ def weather_response_outfit(
 
 
 def weather_response_temperature(temperature, temp_limit, temp):
+    print temp
     if not temperature:
         resp = ''
     else:
-        if temp_limit == 25:
+        if temp_limit == 25 or temp_limit == 77:
             resp = _STRING_LIST_HOT if temp >= temp_limit else _STRING_LIST_WARM
             resp = random.choice(resp)
-        elif temp_limit == 15:
+        elif temp_limit == 15 or temp_limit == 59:
             resp = _STRING_LIST_WARM if temp >= temp_limit else _STRING_LIST_CHILLY
             resp = random.choice(resp)
-        elif temp_limit == 5:
+        elif temp_limit == 5 or temp_limit == 41:
             resp = _STRING_LIST_CHILLY if temp >= temp_limit else _STRING_LIST_COLD
             resp = random.choice(resp)
-        elif temp_limit == -5:
+        elif temp_limit == -5 or temp_limit == 23:
             resp = random.choice(_STRING_LIST_COLD)
 
     return resp
