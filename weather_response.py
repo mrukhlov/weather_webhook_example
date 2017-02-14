@@ -246,12 +246,12 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
     if activity in demi_activity:
         resp = 'What a nice weather for %s!' % (activity)
     elif activity in winter_activity:
-        if temp < 0:
+        if temp <= 0 or temp <= 32:
             resp = 'What a nice weather for %s!' % (activity)
         else:
             resp = 'Not a best weather for %s.' % (activity)
     elif activity in summer_activity:
-        if temp > 0:
+        if temp >= 0 or temp >= 32:
             resp = 'What a nice weather for %s!' % (activity)
         else:
             resp = 'Not a best weather for %s.' % (activity)
@@ -275,7 +275,7 @@ def weather_response_outfit(
         answer = random.choice(string_list)
         resp = 'Chance of %s is %s percent. %s' % (condition_original, condition, answer)
     else:
-        if temp_limit > 0:
+        if temp_limit >= 0 or temp_limit >= 32:
             resp = _STRING_LIST_NO if temp <= temp_limit else _STRING_LIST_YES
             resp = random.choice(resp)
         else:
