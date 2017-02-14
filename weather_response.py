@@ -197,8 +197,8 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
             place=city, time_period=time_period, temperature=temp, condition=condition_list[0]
         )
     else:
-        res = 'The weather in %s on period from %s till %s will be: %s.' % \
-              (city, time_start, time_end, str(degree_list))
+        res = 'It will be {condition} in {city} and around {temp} on period from {time_start} till {time_end}.'.format\
+              (condition=str(condition_list[0]), city=city, temp=temp, time_start=time_start, time_end=time_end)
     return res
 
 
