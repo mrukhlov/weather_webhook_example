@@ -252,7 +252,7 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
         else:
             resp = 'Not a best weather for %s.' % (activity)
     elif activity in summer_activity:
-        if temp >= 0 or temp >= 32:
+        if temp >= 10 or temp >= 50:
             resp = 'What a nice weather for %s!' % (activity)
         else:
             resp = 'Not a best weather for %s.' % (activity)
