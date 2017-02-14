@@ -50,6 +50,7 @@ def date_time_format(parameters):
             elif date_time_date.find('-') > -1:
                 parameters['date-time'] = {'date':date_time_date}
     except AttributeError:
+        parameters.pop('date-time', None)
         parameters['error'] = 'Platform error.'
     return parameters
 
