@@ -439,6 +439,7 @@ def weather_outfit(req):
         resp = 'You forgot to specify your outfit.'
         return {"speech": resp, "displayText": resp}
     condition = parameters.get('condition')
+    condition_list = []
 
     if city:
 
