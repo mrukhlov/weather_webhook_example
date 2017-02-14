@@ -419,11 +419,11 @@ def weather_outfit(req):
             outfit in hot_weather or \
             outfit in unknown_weather:
             if outfit in cold_weather:
-                temp_limit = -5
+                temp_limit = [-5, 23]
             if outfit in warm_weather:
-                temp_limit = 10
+                temp_limit = [10, 50]
             if outfit in hot_weather or outfit in unknown_weather:
-                temp_limit = 20
+                temp_limit = [20, 68]
         if outfit in rain or outfit in snow or outfit in sun:
             if outfit in rain:
                 parameters['condition'] = 'chanceofrain'

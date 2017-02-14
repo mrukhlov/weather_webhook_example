@@ -205,7 +205,6 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 def weather_response_date_period(
         city, date_start, date_end, degree_list, condition_list, condition_original=None
 ):
-    print condition_list
     if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and \
                     datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
         sun_temp_min, sun_temp_max = str(degree_list[0][2]) + '°F', str(degree_list[0][1]) + '°F'
@@ -277,7 +276,7 @@ def weather_response_outfit(
             condition = random.choice(condition_list[1])
         resp = 'Chance of %s is %s percent. %s' % (condition_original, condition, answer)
     else:
-        if temp_limit >= 0 or temp_limit >= 32:
+        if temp_limit[0] >= 0 or temp_limit[1] >= 32:
             resp = _STRING_LIST_NO if temp <= temp_limit else _STRING_LIST_YES
             resp = random.choice(resp)
         else:
