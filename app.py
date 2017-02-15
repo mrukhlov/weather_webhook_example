@@ -203,7 +203,7 @@ def weather_activity(req):
             return {"speech": error, "displayText": error}
     date_time = parameters.get('date-time')
     activity = parameters.get('activity')
-    if activity not in summer_activity and activity not in winter_activity:
+    if activity not in summer_activity and activity not in winter_activity and activity not in demi_activity:
         resp = 'Unknown activity.'
         return {"speech": resp, "displayText": resp}
     unit = parameters.get('unit')
@@ -476,7 +476,7 @@ def weather_outfit(req):
                         (
                             city,
                             date,
-                            time,
+                            time_v,
                             temp,
                             unit,
                             desc,

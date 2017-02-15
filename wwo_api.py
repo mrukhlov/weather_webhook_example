@@ -53,7 +53,6 @@ def wwo_weather_get(parameters, number_of_days=1):
             )
             wwo_data['fx'] = 'yes'
             wwo_data['date'] = date
-            wwo_data['cc'] = 'no'
         if date:
             wwo_data['fx'] = 'yes'
             wwo_data['date'] = date
