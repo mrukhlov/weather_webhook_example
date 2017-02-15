@@ -106,7 +106,10 @@ def weather(req):
     address = parameters.get('address')
     city = None
     if address:
-        city = address.get('city')
+        if isinstance(address, dict):
+            city = address.get('city')
+        else:
+            city = ''
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
         error = parameters.get('error')
@@ -189,7 +192,10 @@ def weather_activity(req):
     address = parameters.get('address')
     city = None
     if address:
-        city = address.get('city')
+        if isinstance(address, dict):
+            city = address.get('city')
+        else:
+            city = ''
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
         error = parameters.get('error')
@@ -289,7 +295,10 @@ def weather_condition(req):
     address = parameters.get('address')
     city = None
     if address:
-        city = address.get('city')
+        if isinstance(address, dict):
+            city = address.get('city')
+        else:
+            city = ''
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
         error = parameters.get('error')
@@ -399,7 +408,10 @@ def weather_outfit(req):
     address = parameters.get('address')
     city = None
     if address:
-        city = address.get('city')
+        if isinstance(address, dict):
+            city = address.get('city')
+        else:
+            city = ''
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
         error = parameters.get('error')
@@ -567,7 +579,10 @@ def weather_temperature(req):
     address = parameters.get('address')
     city = None
     if address:
-        city = address.get('city')
+        if isinstance(address, dict):
+            city = address.get('city')
+        else:
+            city = ''
     if parameters.get('date-time'):
         parameters = date_time_format(parameters)
         error = parameters.get('error')
