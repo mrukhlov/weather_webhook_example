@@ -425,6 +425,8 @@ def weather_outfit(req):
         if len(_DEFAULT_TEMP_UNIT) > 0:
             parameters['unit'] = _DEFAULT_TEMP_UNIT
 
+    condition_original = None
+
     if outfit:
         if outfit in cold_weather or \
             outfit in warm_weather or \
@@ -436,6 +438,7 @@ def weather_outfit(req):
                 temp_limit = [10, 50]
             if outfit in hot_weather or outfit in unknown_weather:
                 temp_limit = [20, 68]
+            condition_original = ''
         if outfit in rain or outfit in snow or outfit in sun:
             if outfit in rain:
                 parameters['condition'] = 'chanceofrain'
