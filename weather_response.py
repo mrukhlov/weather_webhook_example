@@ -205,8 +205,17 @@ def weather_response_time_period(city, time_start, time_end, degree_list, condit
 def weather_response_date_period(
         city, date_start, date_end, degree_list, condition_list, condition_original=None
 ):
+    # weather in minsk on weekend [u'overcast', u'overcast', u'light snow', u'moderate snow']
+    # is it sunny in minsk on weekend
+    # [[u'overcast', u'14'], [u'overcast', u'0'], [u'light snow', u'0'], [u'moderate snow', u'0']]
     if datetime.strptime(date_start, '%Y-%m-%d').isoweekday() == 6 and \
                     datetime.strptime(date_end, '%Y-%m-%d').isoweekday() == 7:
+        if isinstance(condition_list[0], list):
+            condition_sun = condition_list[0][0]
+            condition_sat = condition_list[1][0]
+        else:
+            condition_sun = condition_list[0]
+            condition_sat = condition_list[1]
         sun_temp_min, sun_temp_max = str(degree_list[0][2]) + '°F', str(degree_list[0][1]) + '°F'
         sat_temp_min, sat_temp_max = str(degree_list[1][2]) + '°F', str(degree_list[1][1]) + '°F'
         res = 'On Saturday in {city} it will be {condition_sun}, ' \
@@ -215,10 +224,10 @@ def weather_response_date_period(
               'with a low of {sat_temp_min} and a high of {sat_temp_max}.'.format \
                 (
                     city=city,
-                    condition_sun=condition_list[0][0],
+                    condition_sun=condition_sun,
                     sun_temp_min=sun_temp_min,
                     sun_temp_max=sun_temp_max,
-                    condition_sat=condition_list[1][0],
+                    condition_sat=condition_sat,
                     sat_temp_min=sat_temp_min,
                     sat_temp_max=sat_temp_max
                 )
@@ -262,6 +271,8 @@ def weather_response_activity(activity, temp, winter_activity, summer_activity, 
 def weather_response_condition(condition_original, condition, condition_list=None):
     if condition_list:
         condition = random.choice(condition_list)
+    if isinstance(condition, list):
+        condition = condition[1]
     resp = 'Chance of %s is %s percent.' % (condition_original, condition)
     return resp
 
