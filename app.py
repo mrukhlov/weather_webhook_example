@@ -55,24 +55,6 @@ _TEMPERATURE_LIMITS = {
     'cold': {'C': -5, 'F': 23}
 }
 
-class WeatherResult(object):
-    city = None
-    date = None
-    time = None
-    temp = None
-    unit = None
-    desc = None
-    weather_data = None
-    min_temp = None
-    max_temp = None
-    date_start = None
-    date_end = None
-    degree_list = None
-    condition_list = None
-    time_start = None
-    time_end = None
-    condition = None
-
 app = Flask(__name__)
 log = app.logger
 
@@ -84,6 +66,8 @@ def webhook():
         action = req.get("result").get('action')
     except AttributeError:
         return 'json error'
+
+    print req.get("result").get('resolvedQuery')
 
     if action == 'weather':
         res = weather(req)
@@ -137,49 +121,23 @@ def weather(req):
                 time_period = date_time.get('time-period')
 
                 if time or date_and_time:
-                    city, date, time_v, temp, unit, desc, weather_data = weather_time(parameters, wwo)
+                    weather = weather_time(parameters, wwo)
                     if time:
-                        resp = weather_response_time(city, date, time_v, temp, unit, desc)
+                        resp = weather_response_time(weather)
                     else:
-                        resp = weather_response_date_time(city, date, time_v, temp, unit, desc)
+                        resp = weather_response_date_time(weather)
                 elif date:
-                    (
-                        city,
-                        date,
-                        temp,
-                        unit,
-                        min_temp,
-                        max_temp,
-                        weather_data,
-                        desc
-                    ) = weather_date(parameters, wwo)
-                    resp = weather_response_date(city, date, temp, unit, min_temp, max_temp, desc)
+                    weather = weather_date(parameters, wwo)
+                    resp = weather_response_date(weather)
                 elif date_period:
-                    (
-                        city,
-                        date_start,
-                        date_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_date_period(parameters, wwo)
-                    resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list)
+                    weather = weather_date_period(parameters, wwo)
+                    resp = weather_response_date_period(weather)
                 elif time_period:
-                    (
-                        city,
-                        time_start,
-                        time_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_time_period(parameters, wwo)
-                    resp = weather_response_time_period(
-                        city, time_start, time_end, degree_list, condition_list)
+                    weather = weather_time_period(parameters, wwo)
+                    resp = weather_response_time_period(weather)
             else:
-                
-                city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
-                resp = weather_response_current(city, temp, desc, unit)
+                weather = weather_current(parameters, wwo)
+                resp = weather_response_current(weather)
         else:
             resp = error
     else:
@@ -227,61 +185,34 @@ def weather_activity(req):
                 time_period = date_time.get('time-period')
 
                 if time or date_and_time:
-                    city, date, time_v, temp, unit, desc, weather_data = weather_time(parameters, wwo)
+                    weather = weather_time(parameters, wwo)
                     if time:
-                        weather_resp = weather_response_time(city, date, time_v, temp, unit, desc)
+                        weather_resp = weather_response_time(weather)
                     else:
-                        weather_resp = weather_response_date_time(
-                            city, date, time_v, temp, unit, desc
-                        )
+                        weather_resp = weather_response_date_time(weather)
+                    temp = weather.temp
                 elif date:
-                    (
-                        city,
-                        date,
-                        temp,
-                        unit,
-                        min_temp,
-                        max_temp,
-                        weather_data,
-                        desc
-                    ) = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(
-                        city, date, temp, unit, min_temp, max_temp, desc)
+                    weather = weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(weather)
+                    temp = weather.temp
                 elif date_period:
-                    (
-                        city,
-                        date_start,
-                        date_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    weather = weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(weather)
+                    temp = sum([i[0] for i in weather.degree_list]) / len(weather.degree_list)
                 elif time_period:
-                    (
-                        city,
-                        time_start,
-                        time_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(
-                        city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
+                    weather = weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(weather)
+                    temp = sum([i[0] for i in weather.degree_list]) / len(weather.degree_list)
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_activity(
                         activity, temp, winter_activity, summer_activity, demi_activity
                     ))
             else:
-                
-                city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
-                weather_resp = weather_response_current(city, temp, desc, unit)
+                weather = weather_current(parameters, wwo)
+                weather_resp = weather_response_current(weather)
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_activity(
-                        activity, temp, winter_activity, summer_activity, demi_activity
+                        activity, weather.temp, winter_activity, summer_activity, demi_activity
                     ))
         else:
             resp = error
@@ -335,67 +266,27 @@ def weather_condition(req):
                 time_period = date_time.get('time-period')
 
                 if time or date_and_time:
-                    (
-                        city,
-                        date,
-                        time_v,
-                        temp,
-                        unit,
-                        desc,
-                        condition,
-                        weather_data
-                    ) = weather_time(parameters, wwo)
+                    weather = weather_time(parameters, wwo)
                     if time:
-                        weather_resp = weather_response_time(city, date, time_v, temp, unit, desc)
+                        weather_resp = weather_response_time(weather)
                     else:
-                        weather_resp = weather_response_date_time(
-                            city, date, time_v, temp, unit, desc
-                        )
+                        weather_resp = weather_response_date_time(weather)
                 if date:
-                    (
-                        city,
-                        date,
-                        temp,
-                        unit,
-                        min_temp,
-                        max_temp,
-                        condition,
-                        weather_data,
-                        desc
-                    ) = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(
-                        city, date, temp, unit, min_temp, max_temp, desc
-                    )
+                    weather = weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(weather)
                 elif date_period:
-                    (
-                        city,
-                        date_start,
-                        date_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list, condition_original)
+                    weather = weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(weather)
                 elif time_period:
-                    (
-                        city,
-                        time_start,
-                        time_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(
-                        city, time_start, time_end, degree_list, condition_list)
+                    weather = weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(weather)
                 resp = str(weather_resp) + ' ' + str(
-                    weather_response_condition(condition_original, condition, condition_list))
+                    weather_response_condition(condition_original, weather.condition, weather.condition_list))
             else:
-                
-                city, temp, desc, condition, unit, weather_data = weather_current(parameters, wwo)
-                weather_resp = weather_response_current(city, temp, desc, unit)
+                weather = weather_current(parameters, wwo)
+                weather_resp = weather_response_current(weather)
                 resp = str(weather_resp) + ' ' + str(
-                    weather_response_condition(condition_original, condition))
+                    weather_response_condition(condition_original, weather.condition))
         else:
             resp = error
     else:
@@ -428,10 +319,8 @@ def weather_outfit(req):
     condition_original = None
 
     if outfit:
-        if outfit in cold_weather or \
-            outfit in warm_weather or \
-            outfit in hot_weather or \
-            outfit in unknown_weather:
+        if outfit in cold_weather or outfit in warm_weather or \
+        outfit in hot_weather or outfit in unknown_weather:
             if outfit in cold_weather:
                 temp_limit = [-5, 23]
             if outfit in warm_weather:
@@ -472,104 +361,43 @@ def weather_outfit(req):
                 time_period = date_time.get('time-period')
 
                 if time or date_and_time:
-                    if outfit in rain or outfit in snow or outfit in sun:
-                        (
-                            city,
-                            date,
-                            time_v,
-                            temp,
-                            unit,
-                            desc,
-                            condition,
-                            weather_data
-                        ) = weather_time(parameters, wwo)
-                    else:
-                        (
-                            city,
-                            date,
-                            time_v,
-                            temp,
-                            unit,
-                            desc,
-                            weather_data,
-                        ) = weather_time(parameters, wwo)
+                    weather = weather_time(parameters, wwo)
                     if time:
-                        weather_resp = weather_response_time(city, date, time_v, temp, unit, desc)
+                        weather_resp = weather_response_time(weather)
                     else:
-                        weather_resp = weather_response_date_time(
-                            city, date, time_v, temp, unit, desc
-                        )
+                        weather_resp = weather_response_date_time(weather)
                 elif date:
-                    if outfit in rain or outfit in snow or outfit in sun:
-                        (
-                            city,
-                            date,
-                            temp,
-                            unit,
-                            min_temp,
-                            max_temp,
-                            condition,
-                            weather_data,
-                            desc
-                        )= weather_date(parameters, wwo)
-                    else:
-                        (
-                            city,
-                            date,
-                            temp,
-                            unit,
-                            min_temp,
-                            max_temp,
-                            weather_data,
-                            desc
-                        ) = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(
-                        city, date, temp, unit, min_temp, max_temp, desc
-                    )
+                    weather = weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(weather)
                 elif date_period:
-                    (
-                        city,
-                        date_start,
-                        date_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list, condition_original)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    weather = weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(weather)
+                    weather.temp = sum([int(i[0]) for i in weather.degree_list]) / len(weather.degree_list)
                 elif time_period:
-                    (
-                        city,
-                        time_start,
-                        time_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(
-                        city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
+                    weather = weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(weather)
+                    weather.temp = sum([int(i[0]) for i in weather.degree_list]) / len(weather.degree_list)
+                # 41, 42 json condition/weather.condition
+                condition = weather.condition if condition else condition
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_outfit(
-                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original, condition_list))
-            else:
-                
-                if condition:
-                    (
-                        city,
-                        temp,
-                        desc,
+                        outfit,
+                        rain,
+                        snow,
+                        sun,
                         condition,
-                        unit,
-                        weather_data
-                    ) = weather_current(parameters, wwo)
-                else:
-                    city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
-                weather_resp = weather_response_current(city, temp, desc, unit)
+                        weather.temp,
+                        temp_limit,
+                        condition_original,
+                        weather.condition_list
+                    ))
+            else:
+                weather = weather_current(parameters, wwo)
+                weather_resp = weather_response_current(weather)
+                condition = weather.condition if condition else condition
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_outfit(
-                        outfit, rain, snow, sun, condition, temp, temp_limit, condition_original))
+                        outfit, rain, snow, sun, condition, weather.temp, temp_limit, condition_original))
         else:
             resp = error
     else:
@@ -617,58 +445,28 @@ def weather_temperature(req):
                 time_period = date_time.get('time-period')
 
                 if time or date_and_time:
-                    city, date, time_v, temp, unit, desc, weather_data = weather_time(parameters, wwo)
+                    weather = weather_time(parameters, wwo)
                     if time:
-                        weather_resp = weather_response_time(city, date, time_v, temp, unit, desc)
+                        weather_resp = weather_response_time(weather)
                     else:
-                        weather_resp = weather_response_date_time(
-                            city, date, time_v, temp, unit, desc
-                        )
-                elif date:
-                    (
-                        city,
-                        date,
-                        temp,
-                        unit,
-                        min_temp,
-                        max_temp,
-                        weather_data,
-                        desc
-                    ) = weather_date(parameters, wwo)
-                    weather_resp = weather_response_date(
-                        city, date, temp, unit, min_temp, max_temp, desc)
+                        weather_resp = weather_response_date_time(weather)
+                if date:
+                    weather = weather_date(parameters, wwo)
+                    weather_resp = weather_response_date(weather)
                 elif date_period:
-                    (
-                        city,
-                        date_start,
-                        date_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_date_period(parameters, wwo)
-                    weather_resp = weather_response_date_period(
-                        city, date_start, date_end, degree_list, condition_list)
-                    temp = sum([i[0] for i in degree_list]) / len(degree_list)
+                    weather = weather_date_period(parameters, wwo)
+                    weather_resp = weather_response_date_period(weather)
                 elif time_period:
-                    (
-                        city,
-                        time_start,
-                        time_end,
-                        degree_list,
-                        condition_list,
-                        weather_data
-                    ) = weather_time_period(parameters, wwo)
-                    weather_resp = weather_response_time_period(
-                        city, time_start, time_end, degree_list, condition_list)
-                    temp = sum([int(i[0]) for i in degree_list]) / len(degree_list)
+                    weather = weather_time_period(parameters, wwo)
+                    weather_resp = weather_response_time_period(weather)
+                temp = weather.temp if hasattr(weather, 'temp') else weather.degree_list
                 resp = str(weather_resp) + ' ' + str(weather_response_temperature(
                     temperature, temp_limit, temp))
             else:
-                
-                city, temp, desc, unit, weather_data = weather_current(parameters, wwo)
-                weather_resp = weather_response_current(city, temp, desc, unit)
+                weather = weather_current(parameters, wwo)
+                weather_resp = weather_response_current(weather)
                 resp = str(weather_resp) + ' ' + str(weather_response_temperature(
-                    temperature, temp_limit, temp
+                    temperature, temp_limit, weather.temp
                 ))
         else:
             resp = error

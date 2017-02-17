@@ -21,7 +21,12 @@ def wwo_weather_get(parameters, number_of_days=1):
 
     date_time = parameters.get('date-time')
     if date_time:
-        date = date_time.get('date')
+        try:
+            date = date_time.get('date')
+        except AttributeError:
+            error = 'Platform date-time error.'
+            json_data = {'error': error}
+            return json_data
         if date:
             today = datetime.today()
             params_day = datetime.strptime(date, '%Y-%m-%d')

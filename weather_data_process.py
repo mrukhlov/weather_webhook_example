@@ -94,8 +94,27 @@ def weather_date(parameters, wwo):
         "description": weather["hourly"][6]["weatherDesc"][0]["value"]
     }
 
+    class WeatherResult(object):
+
+        condition_list = None
+
+        def __init__(self, city, date, temp, unit, min_temp, max_temp, weather_data, desc, condition=None):
+            self.date = date
+            self.city = city
+            self.temp = int(temp)
+            self.desc = desc
+            self.unit = unit
+            self.weather_data = weather_data
+            self.min_temp = min_temp
+            self.max_temp = max_temp
+            if condition or condition == 0:
+                if isinstance(condition, int):
+                    self.condition = int(condition)
+                else:
+                    self.condition = condition
+
     if not condition:
-        return city, date, int(temp), unit, min_temp, max_temp, weather_data, desc
+        return WeatherResult(city, date, int(temp), unit, min_temp, max_temp, weather_data, desc)
     else:
         time = wwo['current_condition'][0]["observation_time"]
         time = py_time.strptime(time, '%I:%M %p')
@@ -107,7 +126,7 @@ def weather_date(parameters, wwo):
             if hour['time'] == time:
                 condition = hour[condition]
 
-        return city, date, int(temp), unit, min_temp, max_temp, int(condition), weather_data, desc
+        return WeatherResult(city, date, int(temp), unit, min_temp, max_temp, weather_data, desc, int(condition))
 
 def weather_time(parameters, wwo):
 
@@ -165,10 +184,28 @@ def weather_time(parameters, wwo):
         "description": weather_data_desc
     }
 
+    class WeatherResult(object):
+
+        condition_list = None
+
+        def __init__(self, city, date, time, temp, unit, weather_data_desc, weather_data, condition=None):
+            self.city = city
+            self.temp = int(temp)
+            self.date = date
+            self.time = time
+            self.unit = unit
+            self.weather_data = weather_data
+            self.desc = weather_data_desc
+            if condition or condition == 0:
+                if isinstance(condition, int):
+                    self.condition = int(condition)
+                else:
+                    self.condition = condition
+
     if not condition:
-        return city, date, time, int(temp), unit, weather_data_desc, weather_data
+        return WeatherResult(city, date, time, int(temp), unit, weather_data_desc, weather_data)
     else:
-        return city, date, time, int(temp), unit, weather_data_desc, int(condition), weather_data
+        return WeatherResult(city, date, time, int(temp), unit, weather_data_desc, weather_data, int(condition))
 
 def weather_date_period(parameters, wwo):
 
@@ -230,7 +267,20 @@ def weather_date_period(parameters, wwo):
                 "description": weather_data_desc
             }
 
-    return city, dates[0], dates[1], degree_list, condition_list, weather_data
+    class WeatherResult(object):
+
+        condition = None
+
+        def __init__(self, city, dates, degree_list, condition_list, weather_data):
+            self.city = city
+            self.date_start = dates[0]
+            self.date_end = dates[1]
+            self.degree_list = degree_list
+            self.condition_list = condition_list
+            self.weather_data = weather_data
+            self.condition_original = None
+
+    return WeatherResult(city, dates, degree_list, condition_list, weather_data)
 
 def weather_time_period(parameters, wwo):
 
@@ -294,7 +344,19 @@ def weather_time_period(parameters, wwo):
                 "description": weather_data_desc
             }
 
-    return city, hours[0], hours[1], degree_list, condition_list, weather_data
+    class WeatherResult(object):
+
+        condition = None
+
+        def __init__(self, city, hours, degree_list, condition_list, weather_data):
+            self.city = city
+            self.time_start = hours[0]
+            self.time_end = hours[1]
+            self.degree_list = degree_list
+            self.condition_list = condition_list
+            self.weather_data = weather_data
+
+    return WeatherResult(city, hours, degree_list, condition_list, weather_data)
 
 def weather_current(parameters, wwo):
 
@@ -332,8 +394,20 @@ def weather_current(parameters, wwo):
         "logo": weather["hourly"][6]["weatherIconUrl"][0]["value"],
         "description": weather["hourly"][6]["weatherDesc"][0]["value"].lower()
     }
+
+    class WeatherResult(object):
+        def __init__(self, city, temp, desc, unit, weather_data, condition=None):
+            self.city = city
+            self.temp = int(temp)
+            self.desc = desc
+            self.unit = unit
+            self.weather_data = weather_data
+            if condition or condition == 0:
+                self.condition = int(condition)
+
     if not condition:
-        return city, int(temp), desc, unit, weather_data
+        # return city, int(temp), desc, unit, weather_data
+        return WeatherResult(city, int(temp), desc, unit, weather_data)
     else:
         time = wwo['current_condition'][0]["observation_time"]
         time = py_time.strptime(time, '%I:%M %p')
@@ -344,4 +418,4 @@ def weather_current(parameters, wwo):
         for hour in wwo["weather"][0]['hourly']:
             if hour['time'] == time:
                 condition = hour[condition]
-        return city, int(temp), desc, int(condition), unit, weather_data
+        return WeatherResult(city, int(temp), desc, unit, weather_data, int(condition))

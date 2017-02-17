@@ -136,7 +136,6 @@ rain = [
 	'umbrella',
 	'coat',
 	'gum boots',
-	'beanie',
 	'hat',
 	'jacket',
 	'rain coat',
