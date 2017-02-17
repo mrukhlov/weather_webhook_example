@@ -377,7 +377,6 @@ def weather_outfit(req):
                     weather = weather_time_period(parameters, wwo)
                     weather_resp = weather_response_time_period(weather)
                     weather.temp = sum([int(i[0]) for i in weather.degree_list]) / len(weather.degree_list)
-                # 41, 42 json condition/weather.condition
                 condition = weather.condition if condition else condition
                 resp = str(weather_resp) + ' ' + str(
                     weather_response_outfit(
