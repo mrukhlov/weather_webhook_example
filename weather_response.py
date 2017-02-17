@@ -140,7 +140,7 @@ def weather_response_time_period(weather):
         place=weather.city, time_period=time_period, temperature=temp, condition=weather.condition_list[0]
       )
     else:
-      res = _STRING_WEATHER_TIME_PERIOD.format\
+      res = random.choice(_STRING_WEATHER_TIME_PERIOD).format\
         (
             condition=str(weather.condition_list[0]),
             city=weather.city,
@@ -162,16 +162,15 @@ def weather_response_date_period(weather):
         condition_sat = weather.condition_list[1]
       sun_temp_min, sun_temp_max = str(weather.degree_list[0][2]) + '°F', str(weather.degree_list[0][1]) + '°F'
       sat_temp_min, sat_temp_max = str(weather.degree_list[1][2]) + '°F', str(weather.degree_list[1][1]) + '°F'
-      res = _STRING_WEATHER_DATE_PERIOD_WEEKEND.format \
-            (
-              city=weather.city,
-              condition_sun=condition_sun,
-              sun_temp_min=sun_temp_min,
-              sun_temp_max=sun_temp_max,
-              condition_sat=condition_sat,
-              sat_temp_min=sat_temp_min,
-              sat_temp_max=sat_temp_max
-            )
+      res = random.choice(_STRING_WEATHER_DATE_PERIOD_WEEKEND).format(
+          city=weather.city,
+          condition_sun=condition_sun,
+          sun_temp_min=sun_temp_min,
+          sun_temp_max=sun_temp_max,
+          condition_sat=condition_sat,
+          sat_temp_min=sat_temp_min,
+          sat_temp_max=sat_temp_max
+        )
     else:
       date_start = datetime.strftime(datetime.strptime(weather.date_start, '%Y-%m-%d'), '%B, %d')
       date_end = datetime.strftime(datetime.strptime(weather.date_end, '%Y-%m-%d'), '%B, %d')
@@ -181,8 +180,7 @@ def weather_response_date_period(weather):
         condition_original = random.choice(weather.condition_list)
         if isinstance(condition_original, list):
             condition_original = condition_original[0]
-      res = _STRING_WEATHER_DATE_PERIOD.format \
-        (
+      res = random.choice(_STRING_WEATHER_DATE_PERIOD).format(
             date_start=date_start,
             date_end=date_end,
             city=weather.city,
@@ -195,17 +193,17 @@ def weather_response_date_period(weather):
 
 def weather_response_activity(activity, temp, winter_activity, summer_activity, demi_activity):
     if activity in demi_activity:
-      resp = _STRING_WEATHER_ACTIVITY_YES.format(activity=activity)
+      resp = random.choice(_STRING_WEATHER_ACTIVITY_YES).format(activity=activity)
     elif activity in winter_activity:
       if temp <= 32:
-        resp = _STRING_WEATHER_ACTIVITY_YES.format(activity=activity)
+        resp = random.choice(_STRING_WEATHER_ACTIVITY_YES).format(activity=activity)
       else:
-        resp = _STRING_WEATHER_ACTIVITY_NO.format(activity=activity)
+        resp = random.choice(_STRING_WEATHER_ACTIVITY_NO).format(activity=activity)
     elif activity in summer_activity:
       if temp >= 50:
-        resp = _STRING_WEATHER_ACTIVITY_YES.format(activity=activity)
+        resp = random.choice(_STRING_WEATHER_ACTIVITY_YES).format(activity=activity)
       else:
-        resp = _STRING_WEATHER_ACTIVITY_NO.format(activity=activity)
+        resp = random.choice(_STRING_WEATHER_ACTIVITY_NO).format(activity=activity)
 
     return resp
 
@@ -215,7 +213,10 @@ def weather_response_condition(condition_original, condition, condition_list=Non
       condition = random.choice(condition_list)
     if isinstance(condition, list):
       condition = condition[1]
-    resp = _STRING_RESPONSE_WEATHER_CONDITION.format(condition_original=condition_original, condition=condition)
+    resp = random.choice(_STRING_RESPONSE_WEATHER_CONDITION).format(
+        condition_original=condition_original,
+        condition=condition
+    )
     return resp
 
 
@@ -228,7 +229,7 @@ def weather_response_outfit(
 
       if condition_list:
         condition = random.choice(condition_list)[1]
-      resp = _STRING_RESPONSE_WEATHER_OUTFIT.format(
+      resp = random.choice(_STRING_RESPONSE_WEATHER_OUTFIT).format(
           condition_original=condition_original,
           condition=condition,
           answer=answer

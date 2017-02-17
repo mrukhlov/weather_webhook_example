@@ -63,8 +63,9 @@ _STRING_WEATHER_DATE_TIME = [
     'At {time} on {day} in {place} it will be {temperature} and {condition}.'
 ]
 
-_STRING_WEATHER_TIME_PERIOD = 'It will be {condition} in {city} and around ' \
-    '{temp} on period from {time_start} till {time_end}.'
+_STRING_WEATHER_TIME_PERIOD = [
+	'It will be {condition} in {city} and around {temp} on period from {time_start} till {time_end}.'
+]
 
 _STRING_WEATHER_TIME_PERIOD_DEFINED = [
     'This {time_period} in {place} it will be {temperature} and {condition}.',
@@ -73,19 +74,31 @@ _STRING_WEATHER_TIME_PERIOD_DEFINED = [
     'It will be {condition} in {place} and around {temperature} this {time_period}.',
 ]
 
-_STRING_WEATHER_DATE_PERIOD_WEEKEND = 'On Saturday in {city} it will be {condition_sun}, ' \
+_STRING_WEATHER_DATE_PERIOD_WEEKEND = [
+	'On Saturday in {city} it will be {condition_sun}, ' \
     'with temperatures from {sun_temp_min} to {sun_temp_max}. ' \
     'And Sunday should be {condition_sat}, ' \
     'with a low of {sat_temp_min} and a high of {sat_temp_max}.'
+]
 
-_STRING_WEATHER_DATE_PERIOD = 'During period from {date_start} till {date_end}' \
+_STRING_WEATHER_DATE_PERIOD = [
+	'During period from {date_start} till {date_end}' \
     ' in {city} you can expect {condition}, ' \
     'with a low of {degree_list_min} and a high of {degree_list_max}.'
+]
 
-_STRING_WEATHER_ACTIVITY_YES = 'What a nice weather for {activity}!'
+_STRING_WEATHER_ACTIVITY_YES = [
+	'What a nice weather for {activity}!'
+]
 
-_STRING_WEATHER_ACTIVITY_NO = 'Not a best weather for {activity}.'
+_STRING_WEATHER_ACTIVITY_NO = [
+	'Not a best weather for {activity}.'
+]
 
-_STRING_RESPONSE_WEATHER_CONDITION = 'Chance of {condition_original} is {condition} percent.'
+_STRING_RESPONSE_WEATHER_CONDITION = [
+	'Chance of {condition_original} is {condition} percent.'
+]
 
-_STRING_RESPONSE_WEATHER_OUTFIT = 'Chance of {condition_original} is {condition} percent. {answer}'
+_STRING_RESPONSE_WEATHER_OUTFIT = [
+	'Chance of {condition_original} is {condition} percent. {answer}'
+]
