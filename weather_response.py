@@ -225,7 +225,7 @@ def weather_response_outfit(
     if outfit in rain or outfit in snow or outfit in sun:
       string_list = _STRING_LIST_YES if condition > 50 else _STRING_LIST_NO
       answer = random.choice(string_list)
-      print condition_list
+
       if condition_list:
         condition = random.choice(condition_list)[1]
       resp = _STRING_RESPONSE_WEATHER_OUTFIT.format(

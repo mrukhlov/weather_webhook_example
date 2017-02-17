@@ -67,8 +67,6 @@ def webhook():
     except AttributeError:
         return 'json error'
 
-    print req.get("result").get('resolvedQuery')
-
     if action == 'weather':
         res = weather(req)
     elif action == 'weather.activity':
